@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Meal Plan</title>
+<style>
+  :root {
+    --bg: #f9f8f6;
+    --surface: #ffffff;
+    --border: #e8e5e0;
+    --border-light: #f0ede8;
+    --text: #1a1a1a;
+    --text-2: #666;
+    --text-3: #999;
+    --accent: #c0392b;
+    --accent-light: #fdf0ef;
+    --green: #27500A;
+    --green-light: #EAF3DE;
+    --blue: #0C447C;
+    --blue-light: #E6F1FB;
+    --amber: #633806;
+    --amber-light: #FAEEDA;
+    --purple: #5B2D8E;
+    --purple-light: #F3EAF9;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; min-height: 100vh; }
+
+  /* Layout */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+  .bottom-nav { background: var(--surface); border-top: 1px solid var(--border); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); display: flex; position: sticky; bottom: 0; z-index: 100; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: var(--text-3); font-size: 10px; font-weight: 500; transition: color .15s; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .main { flex: 1; padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+  .card-head { padding: 12px 14px; border-bottom: 1px solid var(--border-light); }
+  .card-title { font-size: 15px; font-weight: 600; }
+  .card-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+  /* Tags / pills */
+  .pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .pill-cal { background: var(--amber-light); color: var(--amber); }
+  .pill-pro { background: var(--blue-light); color: var(--blue); }
+  .pill-norice { background: var(--green-light); color: var(--green); }
+  .pill-rice { background: var(--purple-light); color: var(--purple); }
+  .pill-beef { background: var(--amber-light); color: var(--amber); }
+  .pill-chicken { background: var(--blue-light); color: var(--blue); }
+  .pill-batch { background: #e8f4fd; color: #1a6a9a; }
+  .pill-warn { background: #fdecea; color: var(--accent); }
+  .pill-ok { background: var(--green-light); color: var(--green); }
+
+  /* Meal rows */
+  .meal-row { padding: 12px 14px; border-bottom: 1px solid var(--border-light); display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+  .meal-row:last-child { border-bottom: none; }
+  .meal-row.eve { background: #fafaf8; }
+  .meal-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin-bottom: 3px; }
+  .meal-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .meal-detail { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+  .meal-mac { font-size: 11px; color: var(--text-3); text-align: right; white-space: nowrap; }
+  .meal-mac strong { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-divider { padding: 6px 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); background: #f5f4f1; border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); }
+  .tip-bar { padding: 10px 14px; background: var(--accent-light); font-size: 12px; color: var(--accent); border-top: 1px solid #f5c6c2; }
+  .tip-bar b { font-weight: 700; }
+
+  /* Filter tabs */
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+  .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text-2); white-space: nowrap; }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Shopping list */
+  .shop-section { margin-bottom: 16px; }
+  .shop-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 8px; padding-left: 2px; }
+  .shop-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; transition: opacity .15s; }
+  .shop-item.checked { opacity: .45; }
+  .shop-item.checked .shop-name { text-decoration: line-through; }
+  .shop-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all .15s; }
+  .shop-item.checked .shop-check { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .shop-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .shop-qty { font-size: 12px; color: var(--text-3); }
+  .shop-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+  .btn { padding: 9px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn:active { opacity: .8; }
+
+  /* Weight tracker */
+  .weight-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .weight-input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; background: var(--surface); }
+  .progress-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .progress-label strong { font-weight: 600; }
+  .progress-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s; }
+  .weight-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .weight-log-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border-light); font-size: 14px; }
+  .weight-log-row:last-child { border-bottom: none; }
+  .weight-log-date { color: var(--text-2); font-size: 12px; }
+  .weight-delta { font-size: 12px; font-weight: 600; }
+  .delta-down { color: var(--green); }
+  .delta-up { color: var(--accent); }
+  .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-lbl { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  /* Section headers */
+  .page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: var(--text-2); margin-bottom: 16px; }
+
+  /* Day selector */
+  .day-selector { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+  .day-btn { padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text-2); white-space: nowrap; flex-shrink: 0; }
+  .day-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text-3); }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div>
+      <div class="header-title" id="page-title">This Week</div>
+      <div class="header-sub" id="page-sub">10pm–noon fast · 1,400–1,540 cal/day</div>
+    </div>
+  </div>
+
+  <div class="main" id="main"></div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('plan')" id="nav-plan">
+      <span class="nav-icon">📅</span>Plan
+    </button>
+    <button class="nav-btn" onclick="showPage('dinners')" id="nav-dinners">
+      <span class="nav-icon">🥩</span>Dinners
+    </button>
+    <button class="nav-btn" onclick="showPage('midday')" id="nav-midday">
+      <span class="nav-icon">🥗</span>Midday
+    </button>
+    <button class="nav-btn" onclick="showPage('shop')" id="nav-shop">
+      <span class="nav-icon">🛒</span>Shop
+    </button>
+    <button class="nav-btn" onclick="showPage('weight')" id="nav-weight">
+      <span class="nav-icon">📉</span>Progress
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const PLAN = [
+  { day:"Mon", theme:"Korean night", cal:1480, pro:136, rice:true,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each — done by 8am, fast continues to noon",cal:60,pro:12},
+      {lbl:"Midday",name:"Pick from midday menu",detail:"Leftovers, cheese + meat, eggs — or skip entirely",cal:220,pro:16},
+      {lbl:"Dinner",name:"Korean beef bulgogi bowl",detail:"5oz 93% lean ground beef, bulgogi sauce (2 tbsp), ½ cup jasmine rice, scallions, chili crisp",cal:570,pro:42},
+      {lbl:"Savory",name:"Hippeas puffs",detail:"1 bag sriracha or cheddar",cal:130,pro:4,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes — done by 10pm",cal:100,pro:1,eve:true}
+    ], tip:"Weigh 150g cooked rice = 200 cal. Bulgogi sauce = 2 tbsp max." },
+  { day:"Tue", theme:"Chili night", cal:1400, pro:134, rice:false,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each — done by 8am",cal:60,pro:12},
+      {lbl:"Midday",name:"Pick from midday menu",detail:"Monday bulgogi leftovers are great today",cal:220,pro:16},
+      {lbl:"Dinner",name:"Crockpot beef chili",detail:"1.5 cups, 93% lean beef, kidney beans, tomatoes — batch cook",cal:490,pro:44},
+      {lbl:"Savory",name:"Popcorn",detail:"3 cups air-popped, smoked paprika or parmesan + black pepper",cal:120,pro:4,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Make double chili — freeze in 1.5 cup portions for midday all week." },
+  { day:"Wed", theme:"Steak night", cal:1390, pro:140, rice:false,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each — done by 8am",cal:60,pro:12},
+      {lbl:"Midday",name:"Pick from midday menu",detail:"Leftover chili from Tuesday is perfect",cal:220,pro:16},
+      {lbl:"Dinner",name:"Balsamic flank steak",detail:"6oz flank steak, balsamic + garlic + rosemary, grilled — roasted broccoli + green beans",cal:470,pro:52},
+      {lbl:"Savory",name:"Cheese + deli meat",detail:"1oz provolone + 1oz salami or capicola",cal:190,pro:14,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Cook extra steak — cold leftover is your best midday protein Thu/Fri/Sat." },
+  { day:"Thu", theme:"Chicken + veg", cal:1370, pro:146, rice:false,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each — done by 8am",cal:60,pro:12},
+      {lbl:"Midday",name:"Pick from midday menu",detail:"Skip it, grab eggs, or eat leftover steak cold",cal:160,pro:14},
+      {lbl:"Dinner",name:"Plain chicken + roasted veg",detail:"6oz chicken breast, garlic + herbs, roasted broccoli + green beans",cal:380,pro:56},
+      {lbl:"Savory",name:"Hippeas puffs",detail:"1 bag — you earned something fun after the cleanest dinner",cal:130,pro:4,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Lowest cal day. If hungry add more veg — not starch." },
+  { day:"Fri", theme:"Italian night", cal:1430, pro:134, rice:false,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each — done by 8am",cal:60,pro:12},
+      {lbl:"Midday",name:"Pick from midday menu",detail:"Leftover chicken from Thursday, or cheese + capicola",cal:220,pro:16},
+      {lbl:"Dinner",name:"Beef braciole in tomato",detail:"5oz beef rolled with breadcrumb, parmesan, herbs — braised in tomato sauce, no pasta",cal:530,pro:46},
+      {lbl:"Savory",name:"Parmesan popcorn",detail:"3 cups air-popped, 1 tbsp finely grated parmesan + black pepper",cal:130,pro:5,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Braciole reheats perfectly — make extra for Saturday midday." },
+  { day:"Sat", theme:"Bold weekend", cal:1540, pro:138, rice:true,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each",cal:60,pro:12},
+      {lbl:"Breakfast",name:"Weekend egg plate",detail:"3 eggs fried dry, 1.5oz manchego grated on top, sautéed peppers and onion, salsa roja, hot sauce",cal:400,pro:28},
+      {lbl:"Dinner",name:"Buldak fire chicken",detail:"6oz chicken thighs, buldak sauce (2 tbsp), ½ cup jasmine rice",cal:560,pro:48},
+      {lbl:"Savory",name:"Whisps cheese crisps",detail:"1 bag parmesan Whisps",cal:150,pro:11,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Cucumber slices alongside Buldak help cool down the heat." },
+  { day:"Sun", theme:"Slow cook + prep", cal:1480, pro:142, rice:false,
+    meals:[
+      {lbl:"Coffee",name:"Nurri vanilla coffee",detail:"2 cups, 1/5 can each",cal:60,pro:12},
+      {lbl:"Breakfast",name:"Egg scramble with capicola",detail:"3 eggs, 1.5oz capicola diced in, 1oz provolone, mushrooms, hot sauce",cal:420,pro:32},
+      {lbl:"Dinner",name:"French country beef stew",detail:"5oz beef chuck, pearl onions, carrots, tomato broth — slow cooker all day",cal:490,pro:46},
+      {lbl:"Savory",name:"Hippeas puffs",detail:"1 bag while you prep for the week",cal:130,pro:4,eve:true},
+      {lbl:"Sweet",name:"Grapes",detail:"~1 cup cold grapes",cal:100,pro:1,eve:true}
+    ], tip:"Slow cooker on by noon. Hard boil 6 eggs. Portion Tuesday chili from freezer." }
+];
+
+const DINNERS = [
+  {name:"Korean beef bulgogi bowl",detail:"5oz 93% lean ground beef, bulgogi sauce (2 tbsp), ½ cup jasmine rice, scallions, chili crisp",cal:570,pro:42,tags:["beef","rice"],time:"20 min",tip:"Weigh 150g cooked rice. Cut sauce to 2 tbsp max."},
+  {name:"Crockpot beef chili",detail:"1.5 cups 93% lean beef, kidney beans, tomatoes, chili spices",cal:490,pro:44,tags:["beef","norice","batch"],time:"6–8 hrs",tip:"Double batch and freeze in 1.5 cup portions."},
+  {name:"Balsamic flank steak",detail:"6oz flank steak, balsamic + garlic + rosemary marinade, grilled. Broccoli + green beans",cal:470,pro:52,tags:["beef","norice"],time:"25 min",tip:"Cook extra — cold leftovers are your best midday protein."},
+  {name:"Beef braciole in tomato",detail:"5oz beef rolled with breadcrumb, parmesan, herbs — braised in tomato sauce",cal:530,pro:46,tags:["beef","norice"],time:"1.5–2 hrs",tip:"Reheats perfectly. Make extra for next day."},
+  {name:"French country beef stew",detail:"5oz beef chuck, pearl onions, carrots, tomato broth — slow cooker",cal:490,pro:46,tags:["beef","norice","batch"],time:"6–8 hrs",tip:"Best on Sundays. Portion into containers right away."},
+  {name:"Mongolian beef",detail:"5oz sirloin thinly sliced, soy-ginger-hoisin (1.5 tbsp), green onions",cal:480,pro:46,tags:["beef","norice"],time:"20 min",tip:"Serve over roasted broccoli instead of rice to drop ~200 cal."},
+  {name:"Carne asada",detail:"5oz flank steak, citrus-cumin marinade, grilled. Salsa verde, roasted green beans",cal:410,pro:50,tags:["beef","norice"],time:"20 min",tip:"Add 2 corn tortillas (+160 cal) for tacos if you want."},
+  {name:"Beijing beef (lighter)",detail:"5oz sirloin strips, light sweet chili sauce (1 tbsp), red peppers, onions, over broccoli",cal:430,pro:46,tags:["beef","norice"],time:"20 min",tip:"The sauce does the work even in small amounts."},
+  {name:"Pulehu steak tip skewers",detail:"5oz sirloin tips, Hawaiian soy-ginger marinade, grilled on skewers. Roasted broccoli",cal:420,pro:48,tags:["beef","norice"],time:"20 min",tip:"Great weekend grill option. Similar to bulgogi but smokier."},
+  {name:"Buldak fire chicken",detail:"6oz chicken thighs, buldak sauce (2 tbsp), ½ cup jasmine rice",cal:560,pro:48,tags:["chicken","rice"],time:"25 min",tip:"Cucumber slices alongside cool the heat. Swap to breast to save ~60 cal."},
+  {name:"Plain chicken + roasted veg",detail:"6oz chicken breast, garlic + herbs, roasted broccoli + green beans",cal:380,pro:56,tags:["chicken","norice"],time:"30 min",tip:"Season hard — smoked paprika, garlic powder, Italian seasoning."},
+  {name:"Baked Caesar chicken",detail:"5oz chicken breast, light Caesar + parmesan crust, baked. Over broccoli or green beans",cal:400,pro:50,tags:["chicken","norice"],time:"30 min",tip:"Skip the pasta from the original recipe — the crust is the star."},
+];
+
+const MIDDAY = [
+  {name:"Leftovers from last night",detail:"Whatever was dinner — already counted, already made. Best pick every time.",cal:400,pro:40,flag:"ok"},
+  {name:"Nurri shake straight",detail:"Drink a full can as a meal — 150 cal, 30g protein, done in 30 seconds.",cal:150,pro:30,flag:"ok"},
+  {name:"Hard boiled eggs × 2",detail:"With hot sauce, flaky salt, everything bagel seasoning.",cal:140,pro:12,flag:"ok"},
+  {name:"Cheese + deli meat",detail:"1.5oz salami, capicola or mortadella + 1oz provolone or manchego.",cal:240,pro:16,flag:"ok"},
+  {name:"Small salad with protein",detail:"2 cups greens, 2oz deli meat or leftover steak, balsamic freely.",cal:220,pro:18,flag:"ok"},
+  {name:"Whisps or cheese crisps",detail:"1 bag parmesan Whisps — 150 cal, 11g protein, satisfying.",cal:150,pro:11,flag:"ok"},
+  {name:"Handful of almonds",detail:"1oz = ~23 almonds. Pre-portion into bags — don't eat from the container.",cal:170,pro:6,flag:"warn"},
+  {name:"Granola bar",detail:"Most are 200–300 cal of sugar with almost no protein. Swap for Nurri instead.",cal:260,pro:4,flag:"no"},
+];
+
+const SHOPPING = {
+  "Protein": [
+    {name:"93% lean ground beef",qty:"2 lbs"},
+    {name:"Flank steak",qty:"2 lbs"},
+    {name:"Chicken breast",qty:"1.5 lbs"},
+    {name:"Chicken thighs",qty:"1 lb"},
+    {name:"Beef chuck (stew meat)",qty:"1.5 lbs"},
+    {name:"Salami",qty:"4 oz"},
+    {name:"Capicola",qty:"4 oz"},
+    {name:"Mortadella",qty:"3 oz"},
+    {name:"Prosciutto",qty:"2 oz"},
+    {name:"Eggs",qty:"2 dozen"},
+  ],
+  "Cheese": [
+    {name:"Provolone",qty:"6 oz"},
+    {name:"Pecorino romano",qty:"3 oz"},
+    {name:"Manchego",qty:"3 oz"},
+    {name:"Parmesan (block)",qty:"4 oz"},
+    {name:"Aged cheddar",qty:"3 oz"},
+    {name:"Pepper jack",qty:"2 oz"},
+  ],
+  "Produce": [
+    {name:"Broccoli",qty:"2 heads"},
+    {name:"Green beans",qty:"1 lb"},
+    {name:"Grapes (seedless)",qty:"2 lbs"},
+    {name:"Jalapeños",qty:"3–4"},
+    {name:"Bell peppers",qty:"3"},
+    {name:"Onions",qty:"2"},
+    {name:"Mushrooms",qty:"8 oz"},
+    {name:"Scallions",qty:"1 bunch"},
+    {name:"Garlic",qty:"1 head"},
+    {name:"Fresh basil",qty:"1 bunch"},
+    {name:"Lemon",qty:"2"},
+    {name:"Pepperoncini (jar)",qty:"1"},
+    {name:"Pearl onions",qty:"1 bag"},
+    {name:"Carrots",qty:"3–4"},
+  ],
+  "Pantry": [
+    {name:"Jasmine rice",qty:"1 bag"},
+    {name:"Kidney beans (canned)",qty:"2 cans"},
+    {name:"Crushed tomatoes (canned)",qty:"2 cans"},
+    {name:"Bulgogi sauce",qty:"1 bottle"},
+    {name:"Buldak sauce",qty:"1 bottle"},
+    {name:"Balsamic vinegar",qty:"1 bottle"},
+    {name:"Chili crisp",qty:"1 jar"},
+    {name:"Soy sauce",qty:"1 bottle"},
+    {name:"Everything bagel seasoning",qty:"1 jar"},
+    {name:"Hot sauce",qty:"1 bottle"},
+    {name:"Salsa roja",qty:"1 jar"},
+    {name:"Smoked paprika",qty:"1 jar"},
+  ],
+  "Snacks": [
+    {name:"Nurri vanilla shake",qty:"7–10 cans"},
+    {name:"Hippeas puffs",qty:"4–5 bags"},
+    {name:"Whisps parmesan crisps",qty:"2 bags"},
+    {name:"Popcorn kernels",qty:"1 bag"},
+    {name:"Almonds (pre-portion 1oz bags)",qty:"3–4 oz total"},
+  ]
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let currentPage = 'plan';
+let currentDay = 0;
+let currentFilter = 'all';
+let checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '{}');
+let weightLog = JSON.parse(localStorage.getItem('weightLog') || '[{"date":"Start","weight":178}]');
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+
+function tagPill(tag) {
+  const map = {beef:['pill-beef','Beef'],chicken:['pill-chicken','Chicken'],norice:['pill-norice','No starch'],rice:['pill-rice','Rice night'],batch:['pill-batch','Batch cook']};
+  const [cls, label] = map[tag] || ['',''];
+  return `<span class="pill ${cls}">${label}</span>`;
+}
+
+// ─── PAGES ──────────────────────────────────────────────────────────────────
+function renderPlan() {
+  document.getElementById('page-title').textContent = 'This Week';
+  document.getElementById('page-sub').textContent = '10pm–noon fast · 1,400–1,540 cal/day';
+  const d = PLAN[currentDay];
+  let html = `<div class="day-selector">`;
+  PLAN.forEach((p,i) => {
+    html += `<button class="day-btn${i===currentDay?' active':''}" onclick="currentDay=${i};renderPlan()">${p.day}</button>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="card">
+    <div class="card-head">
+      <div class="card-title">${d.day} — ${d.theme}</div>
+      <div class="pills">
+        <span class="pill pill-cal">${d.cal} cal</span>
+        <span class="pill pill-pro">${d.pro}g protein</span>
+        <span class="pill ${d.rice?'pill-rice':'pill-norice'}">${d.rice?'Rice night':'No starch'}</span>
+      </div>
+    </div>`;
+
+  let shownEve = false;
+  d.meals.forEach(m => {
+    if (m.eve && !shownEve) {
+      html += `<div class="section-divider">Evening — done by 10pm</div>`;
+      shownEve = true;
+    }
+    html += `<div class="meal-row${m.eve?' eve':''}">
+      <div>
+        <div class="meal-label">${m.lbl}</div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-detail">${m.detail}</div>
+      </div>
+      <div class="meal-mac"><strong>${m.cal}</strong>cal<br>${m.pro}g pro</div>
+    </div>`;
+  });
+
+  html += `<div class="tip-bar"><b>Tip:</b> ${d.tip}</div></div>`;
+  document.getElementById('main').innerHTML = html;
+}
+
+function renderDinners() {
+  document.getElementById('page-title').textContent = 'Dinner menu';
+  document.getElementById('page-sub').textContent = `${DINNERS.length} options · 2 rice nights max`;
+  const filters = [{key:'all',label:'All'},{key:'beef',label:'Beef'},{key:'chicken',label:'Chicken'},{key:'norice',label:'No starch'},{key:'rice',label:'Rice nights'},{key:'batch',label:'Batch cook'}];
+  let html = `<div class="filter-row">`;
+  filters.forEach(f => {
+    html += `<button class="filter-btn${currentFilter===f.key?' active':''}" onclick="currentFilter='${f.key}';renderDinners()">${f.label}</button>`;
+  });
+  html += `</div>`;
+
+  const filtered = currentFilter === 'all' ? DINNERS : DINNERS.filter(d => d.tags.includes(currentFilter));
+  filtered.forEach(d => {
+    html += `<div class="card">
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">${d.name}</div>
+          <div class="meal-detail" style="margin:4px 0 8px">${d.detail}</div>
+          <div class="pills">${d.tags.map(tagPill).join('')}<span class="pill" style="background:#f0ede8;color:#666">⏱ ${d.time}</span></div>
+        </div>
+        <div class="meal-mac"><strong>${d.cal}</strong>cal<br>${d.pro}g pro</div>
+      </div>
+      <div class="tip-bar"><b>Tip:</b> ${d.tip}</div>
+    </div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+function renderMidday() {
+  document.getElementById('page-title').textContent = 'Midday options';
+  document.getElementById('page-sub').textContent = 'Pick one or skip — leftovers always win';
+  const flagMap = {ok:['pill-ok','✓ Good pick'],warn:['pill-beef','⚠ Measure it'],no:['pill-warn','✗ Avoid']};
+  let html = ``;
+  MIDDAY.forEach(m => {
+    const [cls, label] = flagMap[m.flag];
+    html += `<div class="card">
+      <div class="meal-row">
+        <div>
+          <div class="meal-name">${m.name}</div>
+          <div class="meal-detail" style="margin:4px 0 6px">${m.detail}</div>
+          <span class="pill ${cls}">${label}</span>
+        </div>
+        <div class="meal-mac"><strong>${m.cal}</strong>cal<br>${m.pro}g pro</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+function renderShop() {
+  document.getElementById('page-title').textContent = 'Shopping list';
+  document.getElementById('page-sub').textContent = 'Tap items to check off';
+  let html = `<div class="shop-actions">
+    <button class="btn btn-primary" onclick="resetShop()">Reset list</button>
+    <button class="btn" onclick="copyShop()">Copy list</button>
+  </div>`;
+  Object.entries(SHOPPING).forEach(([section, items]) => {
+    html += `<div class="shop-section"><div class="shop-section-title">${section}</div>`;
+    items.forEach((item, i) => {
+      const key = section + i;
+      const checked = !!checkedItems[key];
+      html += `<div class="shop-item${checked?' checked':''}" onclick="toggleShop('${key}',this)">
+        <div class="shop-check">${checked?'✓':''}</div>
+        <div class="shop-name">${item.name}</div>
+        <div class="shop-qty">${item.qty}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+function toggleShop(key, el) {
+  checkedItems[key] = !checkedItems[key];
+  localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+  el.classList.toggle('checked');
+  const check = el.querySelector('.shop-check');
+  check.textContent = checkedItems[key] ? '✓' : '';
+}
+
+function resetShop() {
+  checkedItems = {};
+  localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+  renderShop();
+  showToast('List reset');
+}
+
+function copyShop() {
+  const lines = [];
+  Object.entries(SHOPPING).forEach(([s, items]) => {
+    lines.push(`\n${s.toUpperCase()}`);
+    items.forEach(i => lines.push(`• ${i.name} — ${i.qty}`));
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => showToast('List copied!'));
+}
+
+function renderWeight() {
+  document.getElementById('page-title').textContent = 'Progress';
+  document.getElementById('page-sub').textContent = 'Goal: 160–165 lbs';
+  const start = 178;
+  const goal = 165;
+  const current = weightLog.length > 1 ? weightLog[weightLog.length-1].weight : start;
+  const lost = +(start - current).toFixed(1);
+  const toGo = +(current - goal).toFixed(1);
+  const pct = Math.min(100, Math.max(0, Math.round((lost / (start - goal)) * 100)));
+  const weeksLeft = toGo > 0 ? Math.ceil(toGo / 1) : 0;
+
+  let html = `<div class="stat-row">
+    <div class="stat-card"><div class="stat-val">${current}</div><div class="stat-lbl">Current lbs</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)">${lost > 0 ? lost : 0}</div><div class="stat-lbl">lbs lost</div></div>
+    <div class="stat-card"><div class="stat-val">${toGo > 0 ? toGo : '🎯'}</div><div class="stat-lbl">${toGo > 0 ? 'lbs to go' : 'Goal hit!'}</div></div>
+  </div>
+
+  <div class="progress-block">
+    <div class="progress-label"><span>178 lbs</span><strong>Goal: 165 lbs</strong></div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:12px;color:var(--text-3);margin-top:8px">${pct}% there · ~${weeksLeft} weeks at 1 lb/week</div>
+  </div>
+
+  <div class="weight-input-row">
+    <input class="weight-input" type="number" id="weight-in" placeholder="Log today's weight (lbs)" step="0.1" min="100" max="400"/>
+    <button class="btn btn-primary" onclick="logWeight()">Log</button>
+  </div>`;
+
+  if (weightLog.length > 0) {
+    html += `<div class="weight-log">`;
+    [...weightLog].reverse().forEach((entry, i, arr) => {
+      const prev = arr[i+1];
+      let delta = '';
+      if (prev && entry.weight !== prev.weight) {
+        const diff = +(entry.weight - prev.weight).toFixed(1);
+        const cls = diff < 0 ? 'delta-down' : 'delta-up';
+        delta = `<span class="weight-delta ${cls}">${diff > 0 ? '+' : ''}${diff} lbs</span>`;
+      }
+      html += `<div class="weight-log-row">
+        <div>
+          <div style="font-weight:600">${entry.weight} lbs</div>
+          <div class="weight-log-date">${entry.date}</div>
+        </div>
+        ${delta}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('main').innerHTML = html;
+}
+
+function logWeight() {
+  const input = document.getElementById('weight-in');
+  const val = parseFloat(input.value);
+  if (!val || val < 100 || val > 400) { showToast('Enter a valid weight'); return; }
+  const today = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  weightLog.push({date: today, weight: val});
+  localStorage.setItem('weightLog', JSON.stringify(weightLog));
+  input.value = '';
+  renderWeight();
+  showToast(`${val} lbs logged`);
+}
+
+// ─── NAV ────────────────────────────────────────────────────────────────────
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + page).classList.add('active');
+  const renders = {plan:renderPlan, dinners:renderDinners, midday:renderMidday, shop:renderShop, weight:renderWeight};
+  renders[page]();
+  window.scrollTo(0,0);
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+const todayIdx = new Date().getDay();
+currentDay = todayIdx === 0 ? 6 : todayIdx - 1;
+showPage('plan');
+</script>
+</body>
+</html>
