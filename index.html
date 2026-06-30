@@ -41,6 +41,7 @@
   .pill-beef { background: var(--amber-light); color: var(--amber); }
   .pill-chicken { background: var(--blue-light); color: var(--blue); }
   .pill-batch { background: #e8f4fd; color: #1a6a9a; }
+  .pill-easy { background: #fef3cd; color: #856404; }
   .pill-leftover { background: #f0ede8; color: var(--text-2); }
   .pill-time { background: #f0ede8; color: var(--text-2); }
 
@@ -123,6 +124,48 @@
 
   .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity .2s; pointer-events: none; }
   .toast.show { opacity: 1; }
+
+  /* Add recipe form */
+  .fab { position: fixed; bottom: 76px; right: 16px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; z-index: 90; border: none; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; display: block; }
+  .form-input, .form-textarea, .form-select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; background: var(--surface); color: var(--text); font-family: inherit; }
+  .form-textarea { resize: vertical; min-height: 70px; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+  .tag-toggle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag-toggle { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text-2); }
+  .tag-toggle.selected { background: var(--text); color: #fff; border-color: var(--text); }
+  .dyn-list-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .dyn-list-row input { flex: 1; }
+  .dyn-remove { width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-3); font-size: 14px; cursor: pointer; }
+  .dyn-add-btn { font-size: 13px; color: var(--accent); font-weight: 600; cursor: pointer; padding: 4px 0; }
+  .bank-options { display: flex; gap: 8px; margin-bottom: 14px; }
+
+  /* Daily log */
+  .log-date-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .log-date-nav { display: flex; gap: 10px; align-items: center; }
+  .log-date-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .log-date-label { font-size: 14px; font-weight: 600; min-width: 90px; text-align: center; }
+  .log-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+  .log-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 8px; text-align: center; }
+  .log-stat-val { font-size: 20px; font-weight: 700; }
+  .log-stat-lbl { font-size: 10px; color: var(--text-3); margin-top: 2px; text-transform: uppercase; letter-spacing: .03em; }
+  .log-stat.over .log-stat-val { color: var(--accent); }
+  .log-stat.under .log-stat-val { color: var(--green); }
+  .log-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin: 16px 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  .log-add-btn { font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; }
+  .log-entry { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .log-entry-name { font-size: 14px; font-weight: 500; }
+  .log-entry-sub { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+  .log-entry-mac { font-size: 12px; color: var(--text-2); text-align: right; }
+  .log-entry-del { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text-3); font-size: 12px; cursor: pointer; margin-left: 8px; flex-shrink: 0; }
+  .log-empty-row { padding: 14px; text-align: center; color: var(--text-3); font-size: 13px; font-style: italic; }
+  .cal-budget-bar-wrap { margin-bottom: 4px; }
+  .cal-budget-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; position: relative; }
+  .cal-budget-fill { height: 100%; border-radius: 5px; transition: width .3s; }
+  .quick-add-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .quick-add-chip { padding: 5px 10px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); font-size: 11px; color: var(--text-2); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -138,8 +181,9 @@
   <div class="main" id="main"></div>
 
   <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="showPage('week')" id="nav-week"><span class="nav-icon">📅</span>This Week</button>
-    <button class="nav-btn" onclick="showPage('bank')" id="nav-bank"><span class="nav-icon">📖</span>Food Bank</button>
+    <button class="nav-btn active" onclick="showPage('week')" id="nav-week"><span class="nav-icon">📅</span>Week</button>
+    <button class="nav-btn" onclick="showPage('bank')" id="nav-bank"><span class="nav-icon">📖</span>Bank</button>
+    <button class="nav-btn" onclick="showPage('log')" id="nav-log"><span class="nav-icon">📝</span>Log</button>
     <button class="nav-btn" onclick="showPage('midday')" id="nav-midday"><span class="nav-icon">🥗</span>Midday</button>
     <button class="nav-btn" onclick="showPage('shop')" id="nav-shop"><span class="nav-icon">🛒</span>Shop</button>
     <button class="nav-btn" onclick="showPage('weight')" id="nav-weight"><span class="nav-icon">📉</span>Progress</button>
@@ -148,6 +192,7 @@
 
 <div class="toast" id="toast"></div>
 <div id="modal-root"></div>
+<button class="fab" id="add-recipe-fab" onclick="openAddRecipe()" style="display:none">+</button>
 
 <script>
 // ─── FOOD BANK ──────────────────────────────────────────────────────────────
@@ -428,6 +473,560 @@ const FOOD_BANK = [
       "Bake 20-22 minutes until chicken reaches 165°F and crust is golden.",
       "Let rest 5 minutes before serving."
     ]
+  },
+  {
+    id:"steakquesadilla", name:"Steak & cheese quesadilla",
+    summary:"Flank steak, low-carb tortilla, pepper jack, jalapeños, salsa roja",
+    cal:430, pro:38, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"Skip sour cream — the salsa and pepper jack carry plenty of flavor on their own.",
+    ingredients:[
+      {name:"Flank steak, sliced thin",qty:"3 oz"},
+      {name:"Low-carb tortilla",qty:"1 large"},
+      {name:"Pepper jack cheese",qty:"1 oz"},
+      {name:"Jalapeños, sliced",qty:"to taste"},
+      {name:"Salsa roja",qty:"2 tbsp"}
+    ],
+    steps:[
+      "Sear sliced steak in a dry hot pan 3-4 minutes until browned, set aside.",
+      "Lay tortilla flat in the same pan over medium heat.",
+      "Sprinkle cheese over half the tortilla, top with steak and jalapeños.",
+      "Fold tortilla over, press down, cook 2-3 minutes per side until golden and cheese melts.",
+      "Slice into wedges, serve with salsa roja on the side."
+    ]
+  },
+  {
+    id:"carneasadagordita", name:"Carne asada gorditas",
+    summary:"Grilled flank steak, gordita shells, cabbage slaw, guacamole",
+    cal:460, pro:44, tags:["beef","norice"], time:"25 min", serves:1,
+    tip:"Make extra steak Wednesday — this is a great Thursday repeat using leftovers.",
+    ingredients:[
+      {name:"Flank steak, sliced thin",qty:"4 oz"},
+      {name:"Gordita flatbread or thick corn tortilla",qty:"2 small"},
+      {name:"Shredded cabbage",qty:"½ cup"},
+      {name:"Guacamole",qty:"2 tbsp"},
+      {name:"Lime",qty:"½, juiced"}
+    ],
+    steps:[
+      "Grill or sear flank steak 4-5 minutes per side, rest, slice thin against the grain.",
+      "Warm gordita shells in a dry pan, 1 minute per side.",
+      "Toss cabbage with lime juice.",
+      "Fill shells with steak, cabbage slaw, and guacamole.",
+      "Serve immediately."
+    ]
+  },
+  {
+    id:"dandannoodles", name:"Dan dan noodle bowl",
+    summary:"Ground beef, lo mein noodles, chili crisp, scallions, cucumber",
+    cal:480, pro:38, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"Cut sesame paste and hoisin in half from a typical recipe — the chili crisp carries the flavor.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"4 oz"},
+      {name:"Lo mein noodles",qty:"2 oz, cooked"},
+      {name:"Chili crisp",qty:"1 tbsp"},
+      {name:"Sesame paste or tahini",qty:"1 tsp"},
+      {name:"Soy sauce",qty:"1 tbsp"},
+      {name:"Scallions, sliced",qty:"2"},
+      {name:"Cucumber, sliced",qty:"½ cup"}
+    ],
+    steps:[
+      "Cook noodles according to package, drain, set aside.",
+      "Brown ground beef in a dry pan over medium-high heat, 5-6 minutes.",
+      "Whisk chili crisp, sesame paste, and soy sauce together.",
+      "Toss noodles with the sauce, top with beef, scallions, and cucumber.",
+      "Serve warm."
+    ]
+  },
+  {
+    id:"mongoliangroundbeef", name:"Crispy beef in Mongolian sauce",
+    summary:"Ground beef crisped up, sweet-savory soy glaze, scallions, over rice",
+    cal:520, pro:40, tags:["beef","rice"], time:"20 min", serves:1,
+    tip:"Let the beef sit undisturbed in the pan a bit longer than usual to get genuine crispy edges.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"5 oz"},
+      {name:"Soy sauce",qty:"1.5 tbsp"},
+      {name:"Brown sugar",qty:"1 tsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Ginger",qty:"½ tsp, minced"},
+      {name:"Scallions",qty:"2, sliced"},
+      {name:"Jasmine rice (cooked)",qty:"½ cup"}
+    ],
+    steps:[
+      "Heat a dry nonstick pan over high heat.",
+      "Add ground beef, press flat, and let sear undisturbed 3-4 minutes for crispy edges.",
+      "Break apart, add garlic and ginger, cook 1 minute more.",
+      "Add soy sauce and brown sugar, toss to coat, simmer 1-2 minutes until glossy.",
+      "Serve over rice topped with scallions."
+    ]
+  },
+  {
+    id:"grillpansteakstrips", name:"Grill pan honey glazed steak strips",
+    summary:"Beef steak strips, honey-soy glaze, seared hard for char",
+    cal:440, pro:46, tags:["beef","norice"], time:"15 min", serves:1,
+    tip:"High heat is the key — don't crowd the pan or the strips will steam instead of char.",
+    ingredients:[
+      {name:"Sirloin or flank steak, sliced into strips",qty:"5 oz"},
+      {name:"Honey",qty:"1 tbsp"},
+      {name:"Soy sauce",qty:"1 tbsp"},
+      {name:"Garlic",qty:"1 clove, minced"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Whisk honey, soy sauce, and garlic together.",
+      "Heat a grill pan or cast iron over very high heat until smoking.",
+      "Sear steak strips 90 seconds per side, working in batches if needed.",
+      "Toss seared steak in the honey-soy glaze for 30 seconds.",
+      "Steam or roast broccoli separately and serve alongside."
+    ]
+  },
+  {
+    id:"beijingbeefcrispy", name:"Crunchy sweet chili beef",
+    summary:"Beef strips, sweet chili glaze, bell peppers, served over broccoli",
+    cal:450, pro:44, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"This is your 'crispy beef' fix without the deep fry — sear hard and fast instead.",
+    ingredients:[
+      {name:"Flank steak, sliced thin",qty:"5 oz"},
+      {name:"Sweet chili sauce",qty:"1.5 tbsp"},
+      {name:"Red bell pepper, sliced",qty:"½"},
+      {name:"Garlic",qty:"1 clove, minced"},
+      {name:"Red chili, sliced (optional)",qty:"1"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Heat a dry nonstick pan over high heat.",
+      "Sear steak strips 2-3 minutes until browned and slightly crisp at the edges.",
+      "Add bell pepper, garlic, and chili, stir-fry 2 minutes.",
+      "Add sweet chili sauce, toss to coat.",
+      "Steam or roast broccoli and serve alongside."
+    ]
+  },
+  {
+    id:"creamysteaktortellini", name:"Creamy steak bites with broccoli (no pasta)",
+    summary:"Seared steak bites, garlic cream sauce (light), broccoli — pasta swapped for veg",
+    cal:460, pro:48, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"The original recipe uses tortellini — swapping to broccoli keeps the creamy garlic flavor without the carb load.",
+    ingredients:[
+      {name:"Sirloin, cubed",qty:"5 oz"},
+      {name:"Heavy cream",qty:"2 tbsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Parmesan, grated",qty:"1 tbsp"},
+      {name:"Broccoli",qty:"2 cups"},
+      {name:"Beef broth",qty:"2 tbsp"}
+    ],
+    steps:[
+      "Sear steak cubes in a dry hot pan 3-4 minutes until browned, remove and set aside.",
+      "In the same pan, add garlic, beef broth, and heavy cream, simmer 2 minutes.",
+      "Stir in parmesan until melted into a light sauce.",
+      "Steam broccoli separately, then toss into the sauce along with the steak.",
+      "Serve immediately."
+    ]
+  },
+  {
+    id:"beefskewers", name:"Beijing beef skewers (sticky soy-garlic)",
+    summary:"Beef cubes, sticky soy-garlic glaze, grilled, served with green beans",
+    cal:430, pro:48, tags:["beef","norice"], time:"20 min + marinade", serves:1,
+    tip:"Great grilling option — marinate in the morning, cook in 10 minutes at night.",
+    ingredients:[
+      {name:"Sirloin, cubed",qty:"5 oz"},
+      {name:"Soy sauce",qty:"1.5 tbsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Brown sugar",qty:"1 tsp"},
+      {name:"Green beans",qty:"1.5 cups"},
+      {name:"Wooden skewers",qty:"3-4"}
+    ],
+    steps:[
+      "Combine soy sauce, garlic, and brown sugar. Marinate beef cubes 30 min minimum.",
+      "Thread beef onto skewers.",
+      "Grill or sear in a hot pan, turning every 2 minutes, total 6-8 minutes.",
+      "Roast or steam green beans alongside.",
+      "Serve skewers hot."
+    ]
+  },
+  {
+    id:"chilicolorado", name:"Chili colorado (no tortilla)",
+    summary:"Beef chunks braised in red chili sauce, deep and smoky",
+    cal:480, pro:46, tags:["beef","norice","batch"], time:"1.5 hrs", serves:2,
+    tip:"Traditionally served in burritos — skip the tortilla and eat it as a stew for a lighter version.",
+    ingredients:[
+      {name:"Beef chuck, cubed",qty:"1 lb"},
+      {name:"Dried chili powder (ancho or guajillo blend)",qty:"2 tbsp"},
+      {name:"Garlic",qty:"3 cloves, minced"},
+      {name:"Cumin",qty:"1 tsp"},
+      {name:"Beef broth",qty:"1.5 cups"},
+      {name:"Onion",qty:"½, diced"}
+    ],
+    steps:[
+      "Sear beef chunks in a dry hot pot until browned on all sides.",
+      "Add onion and garlic, cook 2 minutes.",
+      "Stir in chili powder and cumin, toast 30 seconds.",
+      "Add beef broth, bring to a simmer.",
+      "Cover and simmer on low 1-1.5 hours until beef is tender and sauce thickens.",
+      "Serve as a stew, or with a small corn tortilla on the side if desired."
+    ]
+  },
+  {
+    id:"chiliconcarne", name:"Authentic chili con carne (no beans, slow braised)",
+    summary:"Beef chunks, jalapeños, deep chili braise — different from the bean chili",
+    cal:470, pro:48, tags:["beef","norice","batch"], time:"2.5-3 hrs", serves:2,
+    tip:"This is a different style from your weekly chili — chunkier, no beans, more like a Texas-style braise. Good for variety.",
+    ingredients:[
+      {name:"Beef chuck, cubed",qty:"1 lb"},
+      {name:"Jalapeños, sliced",qty:"2"},
+      {name:"Chili powder",qty:"2 tbsp"},
+      {name:"Cumin",qty:"1 tsp"},
+      {name:"Garlic",qty:"3 cloves, minced"},
+      {name:"Beef broth",qty:"2 cups"},
+      {name:"Tomato paste",qty:"2 tbsp"}
+    ],
+    steps:[
+      "Sear beef chunks in a dry hot pot until browned on all sides.",
+      "Add garlic, chili powder, and cumin, toast 30 seconds.",
+      "Stir in tomato paste, then add beef broth.",
+      "Add half the jalapeños, bring to a simmer.",
+      "Cover and braise on low 2.5-3 hours until beef falls apart easily.",
+      "Top with remaining fresh jalapeño slices before serving."
+    ]
+  },
+  {
+    id:"nystrips", name:"Pan-seared NY strip with garlic butter (no butter)",
+    summary:"NY strip steak, garlic and herbs, seared hard, broccoli",
+    cal:520, pro:54, tags:["beef","norice"], time:"15 min", serves:1,
+    tip:"Let the steak come to room temp for 20 min before cooking for the most even sear.",
+    ingredients:[
+      {name:"NY strip steak",qty:"6 oz"},
+      {name:"Garlic",qty:"2 cloves, smashed"},
+      {name:"Fresh rosemary or thyme",qty:"1 sprig"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Season steak generously with salt and pepper, let sit at room temp 20 minutes.",
+      "Heat a dry cast iron pan over high heat until very hot.",
+      "Sear steak 3-4 minutes per side for medium-rare, adding garlic and herbs to the pan in the last 2 minutes.",
+      "Rest steak 5 minutes before slicing.",
+      "Steam or roast broccoli and serve alongside."
+    ]
+  },
+  {
+    id:"lazysushi", name:"Lazy sushi bowl",
+    summary:"Sushi rice, seared steak or shrimp substitute, spicy mayo drizzle, cucumber",
+    cal:450, pro:36, tags:["beef","rice"], time:"15 min", serves:1,
+    tip:"A fun change-of-pace dinner — make it deconstructed rather than rolled to keep it fast on a weeknight.",
+    ingredients:[
+      {name:"Sushi rice (cooked)",qty:"½ cup"},
+      {name:"Sirloin, thinly sliced and seared",qty:"4 oz"},
+      {name:"Cucumber, diced",qty:"½ cup"},
+      {name:"Light mayo",qty:"1 tbsp"},
+      {name:"Sriracha",qty:"1 tsp"},
+      {name:"Sesame seeds, scallions",qty:"pinch each"}
+    ],
+    steps:[
+      "Cook sushi rice according to package, let cool slightly.",
+      "Sear sliced sirloin in a dry hot pan 2-3 minutes until browned.",
+      "Mix mayo and sriracha for a quick spicy drizzle.",
+      "Layer rice, cucumber, and steak in a bowl.",
+      "Drizzle with spicy mayo, top with sesame seeds and scallions."
+    ]
+  },
+  {
+    id:"costcorotisserie", name:"Costco rotisserie chicken + roasted veg",
+    summary:"Pre-cooked rotisserie chicken, broccoli + green beans — almost no cooking required",
+    cal:380, pro:54, tags:["chicken","norice","easy"], time:"10 min", serves:1,
+    tip:"One Costco rotisserie chicken covers 4-5 dinners. Pull the skin off the portion you eat to cut calories without losing flavor.",
+    ingredients:[
+      {name:"Costco rotisserie chicken, skin removed",qty:"6 oz"},
+      {name:"Broccoli (fresh or frozen)",qty:"1.5 cups"},
+      {name:"Green beans (fresh or frozen)",qty:"1 cup"},
+      {name:"Garlic powder, black pepper",qty:"to taste"}
+    ],
+    steps:[
+      "Pull 6oz of chicken from the rotisserie bird, skin removed.",
+      "Steam or roast broccoli and green beans for 8-10 minutes.",
+      "Season vegetables with garlic powder and black pepper.",
+      "Reheat chicken in the microwave 1-2 minutes if needed.",
+      "Serve together."
+    ]
+  },
+  {
+    id:"costcosteaktips", name:"Costco marinated steak tips + broccoli",
+    summary:"Costco pre-marinated sirloin tips, pan-seared, broccoli on the side",
+    cal:460, pro:50, tags:["beef","norice","easy"], time:"15 min", serves:1,
+    tip:"Costco's marinated steak tips (often teriyaki or peppercorn) are already seasoned — just sear and go.",
+    ingredients:[
+      {name:"Costco marinated sirloin tips",qty:"5 oz"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Heat a dry pan or grill to high heat.",
+      "Sear steak tips 2-3 minutes per side until browned, cooked to your preference.",
+      "Steam or roast broccoli alongside.",
+      "Rest steak 3 minutes before serving."
+    ]
+  },
+  {
+    id:"costcosalmon", name:"Costco salmon + green beans",
+    summary:"Costco fresh or frozen salmon fillet, baked simple, green beans",
+    cal:420, pro:46, tags:["norice","easy"], time:"18 min", serves:1,
+    tip:"A good once-a-week change of pace from beef and chicken. Costco's Kirkland salmon portions are pre-cut and consistent.",
+    ingredients:[
+      {name:"Salmon fillet",qty:"6 oz"},
+      {name:"Lemon",qty:"½, juiced"},
+      {name:"Garlic powder, dill",qty:"to taste"},
+      {name:"Green beans",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Preheat oven to 400°F.",
+      "Place salmon on a baking sheet, season with lemon juice, garlic powder, and dill.",
+      "Bake 12-15 minutes until it flakes easily.",
+      "Steam or roast green beans alongside.",
+      "Serve together."
+    ]
+  },
+  {
+    id:"costcomeatballs", name:"Costco Italian meatballs + marinara",
+    summary:"Kirkland frozen meatballs, marinara sauce, parmesan — no pasta needed",
+    cal:440, pro:36, tags:["beef","norice","easy","batch"], time:"15 min", serves:1,
+    tip:"Costco's frozen Italian meatballs are genuinely good and pre-cooked — just heat in sauce. Great backup dinner to keep stocked.",
+    ingredients:[
+      {name:"Kirkland frozen Italian meatballs",qty:"5-6 meatballs"},
+      {name:"Marinara sauce",qty:"½ cup"},
+      {name:"Parmesan, grated",qty:"1 tbsp"},
+      {name:"Fresh basil (optional)",qty:"few leaves"}
+    ],
+    steps:[
+      "Heat marinara sauce in a pan over medium heat.",
+      "Add frozen meatballs directly to the sauce, cover and simmer 10-12 minutes until heated through.",
+      "Top with parmesan and fresh basil.",
+      "Serve as-is, no pasta needed."
+    ]
+  },
+  {
+    id:"costcochickensausage", name:"Costco chicken sausage + peppers",
+    summary:"Kirkland chicken sausage links, sautéed peppers and onions",
+    cal:390, pro:32, tags:["chicken","norice","easy"], time:"15 min", serves:1,
+    tip:"Costco's chicken sausage (Italian or apple variety) is high protein and pre-cooked — just sear and slice.",
+    ingredients:[
+      {name:"Kirkland chicken sausage links",qty:"2 links"},
+      {name:"Bell peppers, sliced",qty:"1 cup"},
+      {name:"Onion, sliced",qty:"½"}
+    ],
+    steps:[
+      "Heat a dry pan over medium-high heat.",
+      "Slice sausage links and sear 4-5 minutes until browned.",
+      "Add peppers and onion, cook 5-6 minutes until softened.",
+      "Serve together."
+    ]
+  },
+  {
+    id:"costcoshrimp", name:"Costco argentinian shrimp skewers",
+    summary:"Kirkland pre-seasoned shrimp, grilled fast, side salad",
+    cal:340, pro:42, tags:["norice","easy"], time:"10 min", serves:1,
+    tip:"Costco's Argentinian shrimp are pre-seasoned with garlic and herbs — one of the fastest dinners possible.",
+    ingredients:[
+      {name:"Kirkland Argentinian shrimp",qty:"6 oz"},
+      {name:"Mixed greens",qty:"2 cups"},
+      {name:"Balsamic vinegar",qty:"to taste"}
+    ],
+    steps:[
+      "Heat a dry pan over medium-high heat.",
+      "Cook shrimp 2-3 minutes per side until pink and opaque.",
+      "Serve over mixed greens with balsamic drizzled on top."
+    ]
+  },
+  {
+    id:"easygroundbeefskillet", name:"5-ingredient beef and broccoli skillet",
+    summary:"Ground beef, broccoli, soy-garlic sauce — one pan, ten minutes",
+    cal:420, pro:40, tags:["beef","norice","easy"], time:"10 min", serves:1,
+    tip:"This is your fallback when you have zero time or energy — one pan, minimal thought.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"5 oz"},
+      {name:"Broccoli, frozen or fresh",qty:"1.5 cups"},
+      {name:"Soy sauce",qty:"1.5 tbsp"},
+      {name:"Garlic powder",qty:"1 tsp"}
+    ],
+    steps:[
+      "Brown ground beef in a dry pan over medium-high heat, 5-6 minutes.",
+      "Add broccoli directly to the pan, cover, cook 4-5 minutes until tender.",
+      "Stir in soy sauce and garlic powder, toss to coat.",
+      "Serve hot."
+    ]
+  },
+  {
+    id:"sheetpanchickenfajitas", name:"Sheet pan chicken fajitas (no tortilla)",
+    summary:"Chicken breast strips, peppers, onions, fajita seasoning — all on one tray",
+    cal:370, pro:48, tags:["chicken","norice","easy"], time:"25 min", serves:1,
+    tip:"One tray, one pan to wash. Squeeze lime over everything right before serving.",
+    ingredients:[
+      {name:"Chicken breast, sliced into strips",qty:"6 oz"},
+      {name:"Bell peppers, sliced",qty:"1 cup"},
+      {name:"Onion, sliced",qty:"½"},
+      {name:"Fajita seasoning or chili powder + cumin",qty:"1.5 tsp"},
+      {name:"Lime",qty:"½"}
+    ],
+    steps:[
+      "Preheat oven to 425°F.",
+      "Toss chicken, peppers, and onion with fajita seasoning on a sheet pan.",
+      "Spread in a single layer.",
+      "Roast 18-20 minutes, stirring once halfway through.",
+      "Squeeze lime over everything before serving."
+    ]
+  },
+  {
+    id:"groundbeeftaco bowl", name:"Ground beef taco bowl (no shell)",
+    summary:"Seasoned ground beef, lettuce, salsa, cheese — all the taco flavor, none of the carbs",
+    cal:430, pro:40, tags:["beef","norice","easy"], time:"15 min", serves:1,
+    tip:"Taco seasoning packets work fine here if you want zero effort — just check the sugar content on the label.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"5 oz"},
+      {name:"Taco seasoning",qty:"1 tbsp"},
+      {name:"Romaine lettuce, chopped",qty:"2 cups"},
+      {name:"Salsa",qty:"3 tbsp"},
+      {name:"Shredded cheddar",qty:"1 oz"}
+    ],
+    steps:[
+      "Brown ground beef in a dry pan over medium-high heat, 5-6 minutes.",
+      "Add taco seasoning and a splash of water, simmer 2 minutes.",
+      "Layer lettuce in a bowl, top with beef, salsa, and cheese.",
+      "Serve immediately."
+    ]
+  },
+  {
+    id:"garlicbuttershrimp", name:"Garlic shrimp with green beans (no butter)",
+    summary:"Shrimp seared hard with garlic, lemon, served over green beans",
+    cal:350, pro:40, tags:["norice","easy"], time:"12 min", serves:1,
+    tip:"Shrimp cooks in literally 4 minutes — don't walk away from the pan.",
+    ingredients:[
+      {name:"Shrimp, peeled",qty:"6 oz"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Lemon",qty:"½, juiced"},
+      {name:"Green beans",qty:"1.5 cups"},
+      {name:"Red pepper flakes",qty:"pinch"}
+    ],
+    steps:[
+      "Heat a dry nonstick pan over medium-high heat.",
+      "Add shrimp and garlic, cook 2 minutes per side until pink.",
+      "Add lemon juice and red pepper flakes, toss.",
+      "Steam green beans separately and serve alongside."
+    ]
+  },
+  {
+    id:"turkeymeatloaf", name:"Lean beef meatloaf (mini, single serving)",
+    summary:"93% lean ground beef mini meatloaf, ketchup glaze, green beans",
+    cal:440, pro:42, tags:["beef","norice","batch"], time:"35 min", serves:1,
+    tip:"Make a double batch as individual mini loaves — they freeze and reheat better than one big loaf.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"6 oz"},
+      {name:"Egg",qty:"½, beaten"},
+      {name:"Breadcrumbs",qty:"2 tbsp"},
+      {name:"Ketchup",qty:"1 tbsp + 1 tsp for glaze"},
+      {name:"Garlic powder, onion powder",qty:"1 tsp each"},
+      {name:"Green beans",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Preheat oven to 375°F.",
+      "Mix beef, egg, breadcrumbs, 1 tbsp ketchup, and seasonings.",
+      "Shape into a mini loaf on a baking sheet.",
+      "Brush remaining ketchup on top.",
+      "Bake 30-35 minutes until cooked through.",
+      "Steam green beans and serve alongside."
+    ]
+  },
+  {
+    id:"porkchopsskillet", name:"Pan-seared pork chop with green beans",
+    summary:"Boneless pork chop, simple sear, garlic green beans",
+    cal:410, pro:46, tags:["norice","easy"], time:"18 min", serves:1,
+    tip:"Pork chops dry out fast — pull them at 145°F internal and let rest, don't overcook.",
+    ingredients:[
+      {name:"Boneless pork chop",qty:"6 oz"},
+      {name:"Garlic powder, paprika",qty:"1 tsp each"},
+      {name:"Green beans",qty:"1.5 cups"},
+      {name:"Garlic",qty:"1 clove, minced"}
+    ],
+    steps:[
+      "Season pork chop with garlic powder and paprika.",
+      "Heat a dry pan over medium-high heat.",
+      "Sear pork chop 4-5 minutes per side until internal temp hits 145°F.",
+      "Rest 5 minutes.",
+      "Sauté green beans with minced garlic in the same pan, 4-5 minutes.",
+      "Serve together."
+    ]
+  },
+  {
+    id:"turkeychili", name:"White chicken chili (lighter)",
+    summary:"Chicken breast, white beans, green chiles — different from your beef chili",
+    cal:420, pro:46, tags:["chicken","norice","batch"], time:"30 min", serves:2,
+    tip:"A good rotation option from the regular beef chili — same comfort, different flavor profile.",
+    ingredients:[
+      {name:"Chicken breast, shredded",qty:"12 oz"},
+      {name:"White beans (canned)",qty:"1 can, drained"},
+      {name:"Diced green chiles",qty:"1 can (4oz)"},
+      {name:"Chicken broth",qty:"1.5 cups"},
+      {name:"Cumin",qty:"1 tsp"},
+      {name:"Garlic",qty:"2 cloves, minced"}
+    ],
+    steps:[
+      "Cook chicken breast in broth until cooked through, about 15 minutes, then shred.",
+      "Add beans, green chiles, cumin, and garlic to the pot.",
+      "Simmer 15 minutes until flavors meld.",
+      "Portion into 1.5 cup servings — keeps well 4-5 days."
+    ]
+  },
+  {
+    id:"steaksaladbig", name:"Big steak salad dinner",
+    summary:"Grilled steak over greens, lots of toppings, balsamic — dinner-sized version of your usual salad",
+    cal:480, pro:50, tags:["beef","norice","easy"], time:"15 min", serves:1,
+    tip:"A good 'I don't feel like cooking much' dinner that still hits your numbers hard.",
+    ingredients:[
+      {name:"Flank steak or sirloin",qty:"5 oz, grilled and sliced"},
+      {name:"Mixed greens or arugula",qty:"3 cups"},
+      {name:"Cherry tomatoes",qty:"½ cup"},
+      {name:"Red onion, sliced",qty:"¼"},
+      {name:"Parmesan, shaved",qty:"1 tbsp"},
+      {name:"Balsamic vinegar",qty:"to taste"}
+    ],
+    steps:[
+      "Sear or grill steak 3-4 minutes per side, rest, slice thin.",
+      "Build a big bowl with greens, tomatoes, and red onion.",
+      "Top with sliced steak and shaved parmesan.",
+      "Drizzle generously with balsamic."
+    ]
+  },
+  {
+    id:"bakedchickenparm", name:"Baked chicken parm (no pasta, no breading)",
+    summary:"Chicken breast, marinara, mozzarella, broiled — all the flavor, less of the carbs",
+    cal:420, pro:52, tags:["chicken","norice","easy"], time:"25 min", serves:1,
+    tip:"Skipping the breading keeps this light while the marinara and cheese still deliver full chicken parm flavor.",
+    ingredients:[
+      {name:"Chicken breast",qty:"6 oz"},
+      {name:"Marinara sauce",qty:"⅓ cup"},
+      {name:"Mozzarella, shredded",qty:"1 oz"},
+      {name:"Parmesan, grated",qty:"1 tbsp"},
+      {name:"Italian seasoning",qty:"1 tsp"}
+    ],
+    steps:[
+      "Preheat oven to 400°F.",
+      "Season chicken breast with Italian seasoning, place in a baking dish.",
+      "Bake 18-20 minutes until nearly cooked through.",
+      "Top with marinara, mozzarella, and parmesan.",
+      "Broil 2-3 minutes until cheese is bubbly and golden."
+    ]
+  },
+  {
+    id:"beefkebabsgrilled", name:"Grilled beef and pepper kebabs",
+    summary:"Sirloin cubes, bell peppers, onion, simple marinade, grilled",
+    cal:410, pro:46, tags:["beef","norice","easy"], time:"20 min + marinade", serves:1,
+    tip:"Great for the grill in warmer months. Marinate while you're at work, cook in 10 minutes when you get home.",
+    ingredients:[
+      {name:"Sirloin, cubed",qty:"5 oz"},
+      {name:"Bell peppers, cubed",qty:"1 cup"},
+      {name:"Onion, cubed",qty:"½"},
+      {name:"Olive oil-free marinade: soy sauce + garlic + lemon",qty:"3 tbsp total"},
+      {name:"Wooden or metal skewers",qty:"3-4"}
+    ],
+    steps:[
+      "Combine soy sauce, garlic, and lemon juice. Marinate beef cubes 30 min minimum.",
+      "Thread beef, peppers, and onion onto skewers, alternating.",
+      "Grill or sear in a hot pan, turning every 2-3 minutes, total 8-10 minutes.",
+      "Serve hot off the skewer."
+    ]
   }
 ];
 
@@ -444,6 +1043,17 @@ const MIDDAY = [
 
 const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
+// ─── CUSTOM RECIPES (user-added, stored in browser) ────────────────────────
+let customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '[]');
+
+function getAllMeals() {
+  return [...FOOD_BANK, ...customRecipes];
+}
+
+function saveCustomRecipes() {
+  localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+}
+
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let currentPage = 'week';
 let currentFilter = 'all';
@@ -451,11 +1061,50 @@ let checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '{}');
 let weightLog = JSON.parse(localStorage.getItem('weightLog') || '[{"date":"Start","weight":178}]');
 let weekPlan = JSON.parse(localStorage.getItem('weekPlan') || '{}'); // { Mon: {type:'meal', id:'bulgogi'} or {type:'leftover', from:'Mon', name:'...'} }
 let pickingDay = null;
+let dailyLogs = JSON.parse(localStorage.getItem('dailyLogs') || '{}'); // { '2026-06-29': { food:[{name,cal,pro}], exercise:[{name,cal}] } }
+let logViewDate = todayKey();
+
+function todayKey(offsetDays = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().split('T')[0];
+}
+
+function getLogForDate(key) {
+  if (!dailyLogs[key]) dailyLogs[key] = { breakfast: [], midday: [], dinner: [], snacks: [], exercise: [] };
+  // migrate old flat 'food' array if it exists from a previous version
+  if (dailyLogs[key].food) {
+    dailyLogs[key].snacks = dailyLogs[key].food;
+    delete dailyLogs[key].food;
+  }
+  ['breakfast','midday','dinner','snacks','exercise'].forEach(k => { if (!dailyLogs[key][k]) dailyLogs[key][k] = []; });
+  return dailyLogs[key];
+}
+
+const QUICK_ADD_FOODS = [
+  {name:"Nurri shake (1/5 can in coffee)",cal:30,pro:6},
+  {name:"Nurri shake (full can)",cal:150,pro:30},
+  {name:"Hippeas puffs (1 bag)",cal:130,pro:4},
+  {name:"Popcorn (3 cups air-popped)",cal:120,pro:4},
+  {name:"Grapes (1 cup)",cal:100,pro:1},
+  {name:"Hard boiled egg",cal:70,pro:6},
+  {name:"Cheese + deli meat snack",cal:240,pro:16},
+  {name:"Whisps cheese crisps (1 bag)",cal:150,pro:11},
+];
+
+const QUICK_ADD_EXERCISE = [
+  {name:"Walk — 20 min",cal:90},
+  {name:"Walk — 30 min",cal:135},
+  {name:"Walk — 45 min",cal:200},
+  {name:"Strength training — 30 min",cal:150},
+  {name:"Strength training — 45 min",cal:220},
+];
 
 function saveState() {
   localStorage.setItem('weekPlan', JSON.stringify(weekPlan));
   localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
   localStorage.setItem('weightLog', JSON.stringify(weightLog));
+  localStorage.setItem('dailyLogs', JSON.stringify(dailyLogs));
 }
 
 function showToast(msg) {
@@ -465,10 +1114,10 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-function getMeal(id) { return FOOD_BANK.find(m => m.id === id); }
+function getMeal(id) { return getAllMeals().find(m => m.id === id); }
 
 function tagPill(tag) {
-  const map = {beef:['pill-beef','Beef'],chicken:['pill-chicken','Chicken'],norice:['pill-norice','No starch'],rice:['pill-rice','Rice night'],batch:['pill-batch','Batch cook']};
+  const map = {beef:['pill-beef','Beef'],chicken:['pill-chicken','Chicken'],norice:['pill-norice','No starch'],rice:['pill-rice','Rice night'],batch:['pill-batch','Batch cook'],easy:['pill-easy','Easy / Costco']};
   const [cls, label] = map[tag] || ['',''];
   return `<span class="pill ${cls}">${label}</span>`;
 }
@@ -478,6 +1127,7 @@ function renderWeek() {
   document.getElementById('page-title').textContent = 'This Week';
   document.getElementById('page-sub').textContent = 'Tap a day to pick dinner or mark leftovers';
   document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'none';
 
   let totalCal = 0, totalPro = 0, plannedDays = 0;
   let html = '';
@@ -545,7 +1195,7 @@ function openPicker(day) {
   }
 
   html += `<div class="recipe-section-title">Food bank</div>`;
-  FOOD_BANK.forEach(m => {
+  getAllMeals().forEach(m => {
     html += `<div class="modal-option" onclick="setMeal('${day}','${m.id}')">${m.name} <span style="color:var(--text-3)">· ${m.cal} cal</span></div>`;
   });
 
@@ -577,23 +1227,37 @@ function closeModal() {
 
 // ─── FOOD BANK PAGE ─────────────────────────────────────────────────────────
 function renderBank() {
+  const allMeals = getAllMeals();
   document.getElementById('page-title').textContent = 'Food bank';
-  document.getElementById('page-sub').textContent = `${FOOD_BANK.length} dinners · tap any for full recipe`;
+  document.getElementById('page-sub').textContent = `${allMeals.length} dinners · tap any for full recipe`;
   document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'flex';
 
-  const filters = [{key:'all',label:'All'},{key:'beef',label:'Beef'},{key:'chicken',label:'Chicken'},{key:'norice',label:'No starch'},{key:'rice',label:'Rice nights'},{key:'batch',label:'Batch cook'}];
+  const filters = [{key:'all',label:'All'},{key:'beef',label:'Beef'},{key:'chicken',label:'Chicken'},{key:'norice',label:'No starch'},{key:'rice',label:'Rice nights'},{key:'easy',label:'Easy / Costco'},{key:'batch',label:'Batch cook'},{key:'custom',label:'My additions'}];
   let html = `<div class="filter-row">`;
   filters.forEach(f => {
     html += `<button class="filter-btn${currentFilter===f.key?' active':''}" onclick="currentFilter='${f.key}';renderBank()">${f.label}</button>`;
   });
   html += `</div>`;
 
-  const filtered = currentFilter === 'all' ? FOOD_BANK : FOOD_BANK.filter(d => d.tags.includes(currentFilter));
+  let filtered;
+  if (currentFilter === 'all') filtered = allMeals;
+  else if (currentFilter === 'custom') filtered = customRecipes;
+  else filtered = allMeals.filter(d => d.tags.includes(currentFilter));
+
+  if (filtered.length === 0) {
+    html += `<div class="card" style="padding:30px 20px;text-align:center;color:var(--text-3)">
+      <div style="font-size:32px;margin-bottom:10px">📖</div>
+      No recipes here yet.<br>Tap the + button to add one.
+    </div>`;
+  }
+
   filtered.forEach(d => {
+    const isCustom = d.custom === true;
     html += `<div class="card">
       <div class="meal-row" onclick="openRecipe('${d.id}')">
         <div>
-          <div class="meal-name">${d.name}</div>
+          <div class="meal-name">${d.name}${isCustom ? ' <span class="pill pill-batch">Added by you</span>' : ''}</div>
           <div class="meal-detail">${d.summary}</div>
           <div class="pills">${d.tags.map(tagPill).join('')}<span class="pill pill-time">⏱ ${d.time}</span></div>
         </div>
@@ -633,11 +1297,328 @@ function closeDetail() {
   showPage(currentPage === 'recipe' ? (pickingDay !== null ? 'week' : 'bank') : 'bank');
 }
 
-// ─── MIDDAY PAGE ────────────────────────────────────────────────────────────
+// ─── DAILY LOG PAGE ─────────────────────────────────────────────────────────
+let calTarget = parseInt(localStorage.getItem('calTarget')) || 1480;
+let proTarget = parseInt(localStorage.getItem('proTarget')) || 138;
+
+function formatLogDate(key) {
+  const today = todayKey();
+  if (key === today) return 'Today';
+  if (key === todayKey(-1)) return 'Yesterday';
+  if (key === todayKey(1)) return 'Tomorrow';
+  const d = new Date(key + 'T00:00:00');
+  return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+
+function shiftLogDate(delta) {
+  const d = new Date(logViewDate + 'T00:00:00');
+  d.setDate(d.getDate() + delta);
+  logViewDate = d.toISOString().split('T')[0];
+  renderLog();
+}
+
+const MEAL_SLOTS = [
+  {key:'breakfast', label:'Breakfast', icon:'🍳'},
+  {key:'midday', label:'Midday', icon:'🥗'},
+  {key:'dinner', label:'Dinner', icon:'🍽️'},
+  {key:'snacks', label:'Snacks', icon:'🥨'}
+];
+
+function renderLog() {
+  document.getElementById('page-title').textContent = 'Daily log';
+  document.getElementById('page-sub').textContent = 'Food, exercise, and protein in one place';
+  document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'none';
+
+  const log = getLogForDate(logViewDate);
+  const allFood = [...log.breakfast, ...log.midday, ...log.dinner, ...log.snacks];
+  const foodCal = allFood.reduce((a,f) => a + f.cal, 0);
+  const foodPro = allFood.reduce((a,f) => a + f.pro, 0);
+  const exCal = log.exercise.reduce((a,e) => a + e.cal, 0);
+  const netCal = foodCal - exCal;
+  const calPct = Math.min(100, Math.round((netCal / calTarget) * 100));
+  const proPct = Math.min(100, Math.round((foodPro / proTarget) * 100));
+  const overUnder = netCal > calTarget ? 'over' : 'under';
+  const barColor = netCal > calTarget ? 'var(--accent)' : 'var(--green)';
+
+  let html = `<div class="log-date-row">
+    <div class="log-date-nav">
+      <button class="log-date-btn" onclick="shiftLogDate(-1)">‹</button>
+      <div class="log-date-label">${formatLogDate(logViewDate)}</div>
+      <button class="log-date-btn" onclick="shiftLogDate(1)">›</button>
+    </div>
+    ${logViewDate !== todayKey() ? `<button class="btn btn-sm" onclick="logViewDate=todayKey();renderLog()">Today</button>` : ''}
+  </div>
+
+  <div class="log-summary">
+    <div class="log-stat ${overUnder}"><div class="log-stat-val">${netCal}</div><div class="log-stat-lbl">Net cal</div></div>
+    <div class="log-stat"><div class="log-stat-val">${foodPro}g</div><div class="log-stat-lbl">Protein</div></div>
+    <div class="log-stat"><div class="log-stat-val">${exCal}</div><div class="log-stat-lbl">Burned</div></div>
+  </div>
+
+  <div class="card" style="padding:14px">
+    <div class="cal-budget-bar-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:6px">
+        <span>Calorie budget</span><span>${netCal} / ${calTarget} <span class="log-add-btn" style="margin-left:6px" onclick="openEditTargets()">Edit</span></span>
+      </div>
+      <div class="cal-budget-track"><div class="cal-budget-fill" style="width:${calPct}%;background:${barColor}"></div></div>
+    </div>
+    <div class="cal-budget-bar-wrap" style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:6px">
+        <span>Protein goal</span><span>${foodPro}g / ${proTarget}g</span>
+      </div>
+      <div class="cal-budget-track"><div class="cal-budget-fill" style="width:${proPct}%;background:var(--blue)"></div></div>
+    </div>
+  </div>`;
+
+  MEAL_SLOTS.forEach(slot => {
+    const entries = log[slot.key];
+    const slotCal = entries.reduce((a,f) => a + f.cal, 0);
+    html += `<div class="log-section-title">
+      <span>${slot.icon} ${slot.label}${entries.length ? ` <span style="color:var(--text-3);font-weight:400;text-transform:none">· ${slotCal} cal</span>` : ''}</span>
+      <span class="log-add-btn" onclick="openAddFood('${slot.key}')">+ Add</span>
+    </div>`;
+
+    if (entries.length === 0) {
+      html += `<div class="log-empty-row">Nothing logged — tap + Add if you ate something here</div>`;
+    } else {
+      entries.forEach((f, i) => {
+        html += `<div class="log-entry">
+          <div><div class="log-entry-name">${f.name}</div></div>
+          <div style="display:flex;align-items:center">
+            <div class="log-entry-mac">${f.cal} cal<br>${f.pro}g pro</div>
+            <button class="log-entry-del" onclick="removeFoodEntry('${slot.key}',${i})">✕</button>
+          </div>
+        </div>`;
+      });
+    }
+  });
+
+  html += `<div class="log-section-title"><span>🏃 Exercise${log.exercise.length ? ` <span style="color:var(--text-3);font-weight:400;text-transform:none">· −${exCal} cal</span>` : ''}</span><span class="log-add-btn" onclick="openAddExercise()">+ Add</span></div>`;
+
+  if (log.exercise.length === 0) {
+    html += `<div class="log-empty-row">No exercise logged yet</div>`;
+  } else {
+    log.exercise.forEach((e, i) => {
+      html += `<div class="log-entry">
+        <div><div class="log-entry-name">${e.name}</div></div>
+        <div style="display:flex;align-items:center">
+          <div class="log-entry-mac">−${e.cal} cal</div>
+          <button class="log-entry-del" onclick="removeExerciseEntry(${i})">✕</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  document.getElementById('main').innerHTML = html;
+}
+
+function openEditTargets() {
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Adjust daily targets</div>
+      <div class="page-sub-line">Change these anytime — useful if your weight or activity level changes</div>
+      <div class="form-group">
+        <label class="form-label">Daily calorie target</label>
+        <input class="form-input" id="t-cal" type="number" value="${calTarget}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Daily protein target (g)</label>
+        <input class="form-input" id="t-pro" type="number" value="${proTarget}"/>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-full" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" onclick="saveTargets()">Save</button>
+      </div>
+    </div></div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+
+function saveTargets() {
+  const cal = parseInt(document.getElementById('t-cal').value);
+  const pro = parseInt(document.getElementById('t-pro').value);
+  if (!cal || cal < 800 || cal > 4000) { showToast('Enter a calorie target between 800-4000'); return; }
+  if (!pro || pro < 30 || pro > 400) { showToast('Enter a protein target between 30-400'); return; }
+  calTarget = cal;
+  proTarget = pro;
+  localStorage.setItem('calTarget', calTarget);
+  localStorage.setItem('proTarget', proTarget);
+  closeModal();
+  renderLog();
+  showToast('Targets updated');
+}
+
+
+let addingFoodSlot = 'snacks';
+
+const SLOT_QUICK_ADDS = {
+  breakfast: [
+    {name:"3-egg scramble + cheese + deli meat",cal:400,pro:30},
+    {name:"Nurri shake (full can)",cal:150,pro:30},
+  ],
+  midday: [
+    {name:"Leftovers from last night",cal:400,pro:40},
+    {name:"Cheese + deli meat plate",cal:240,pro:16},
+    {name:"Hard boiled eggs x2",cal:140,pro:12},
+    {name:"Small salad with protein",cal:220,pro:18},
+  ],
+  dinner: [],
+  snacks: [
+    {name:"Nurri shake (1/5 can in coffee)",cal:30,pro:6},
+    {name:"Hippeas puffs (1 bag)",cal:130,pro:4},
+    {name:"Popcorn (3 cups air-popped)",cal:120,pro:4},
+    {name:"Grapes (1 cup)",cal:100,pro:1},
+    {name:"Whisps cheese crisps (1 bag)",cal:150,pro:11},
+  ]
+};
+
+function openAddFood(slot) {
+  addingFoodSlot = slot || 'snacks';
+  const slotLabel = MEAL_SLOTS.find(s => s.key === addingFoodSlot)?.label || 'Snacks';
+  const quickAdds = SLOT_QUICK_ADDS[addingFoodSlot] || [];
+
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Add to ${slotLabel}</div>
+      <div class="page-sub-line">Estimate from a photo? Send it to Claude first, then enter the numbers here.</div>`;
+
+  if (quickAdds.length) {
+    html += `<div class="recipe-section-title">Quick add</div>
+      <div class="quick-add-row">${quickAdds.map((q,i) => `<span class="quick-add-chip" onclick="quickAddFood(${i})">+ ${q.name}</span>`).join('')}</div>`;
+  }
+
+  html += `<div class="recipe-section-title">Manual entry</div>
+      <div class="form-group">
+        <label class="form-label">What did you eat?</label>
+        <input class="form-input" id="lf-name" placeholder="e.g. Balsamic flank steak + broccoli"/>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Calories</label>
+          <input class="form-input" id="lf-cal" type="number" placeholder="470"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Protein (g)</label>
+          <input class="form-input" id="lf-pro" type="number" placeholder="52"/>
+        </div>
+      </div>`;
+
+  if (addingFoodSlot === 'dinner') {
+    html += `<div class="recipe-section-title">Or pick from food bank</div>`;
+    getAllMeals().slice(0,8).forEach(m => {
+      html += `<div class="modal-option" onclick="logMealDirect('${m.id}')">${m.name} <span style="color:var(--text-3)">· ${m.cal} cal / ${m.pro}g pro</span></div>`;
+    });
+  }
+
+  html += `<div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-full" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" onclick="saveFoodEntry()">Add to log</button>
+      </div>
+    </div></div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+
+function quickAddFood(i) {
+  const q = SLOT_QUICK_ADDS[addingFoodSlot][i];
+  const log = getLogForDate(logViewDate);
+  log[addingFoodSlot].push({name: q.name, cal: q.cal, pro: q.pro});
+  saveState();
+  closeModal();
+  renderLog();
+  showToast(`${q.name} logged`);
+}
+
+function quickAddExercise(i) {
+  const q = QUICK_ADD_EXERCISE[i];
+  const log = getLogForDate(logViewDate);
+  log.exercise.push({name: q.name, cal: q.cal});
+  saveState();
+  renderLog();
+  showToast(`${q.name} logged`);
+}
+
+function removeFoodEntry(slot, i) {
+  const log = getLogForDate(logViewDate);
+  log[slot].splice(i,1);
+  saveState();
+  renderLog();
+}
+
+function removeExerciseEntry(i) {
+  const log = getLogForDate(logViewDate);
+  log.exercise.splice(i,1);
+  saveState();
+  renderLog();
+}
+
+function logMealDirect(id) {
+  const m = getMeal(id);
+  if (!m) return;
+  const log = getLogForDate(logViewDate);
+  log[addingFoodSlot].push({name: m.name, cal: m.cal, pro: m.pro});
+  saveState();
+  closeModal();
+  renderLog();
+  showToast(`${m.name} logged`);
+}
+
+function saveFoodEntry() {
+  const name = document.getElementById('lf-name').value.trim();
+  const cal = parseInt(document.getElementById('lf-cal').value) || 0;
+  const pro = parseInt(document.getElementById('lf-pro').value) || 0;
+  if (!name) { showToast('Add a name'); return; }
+  if (!cal) { showToast('Add a calorie estimate'); return; }
+  const log = getLogForDate(logViewDate);
+  log[addingFoodSlot].push({name, cal, pro});
+  saveState();
+  closeModal();
+  renderLog();
+  showToast(`${name} logged`);
+}
+
+function openAddExercise() {
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Log exercise</div>
+      <div class="page-sub-line">Calories burned get subtracted from your daily total</div>
+      <div class="form-group">
+        <label class="form-label">Activity</label>
+        <input class="form-input" id="le-name" placeholder="e.g. Walk — 35 min"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Calories burned</label>
+        <input class="form-input" id="le-cal" type="number" placeholder="150"/>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-full" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" onclick="saveExerciseEntry()">Add to log</button>
+      </div>
+    </div></div>`;
+  document.getElementById('modal-root').innerHTML = html;
+}
+
+function saveExerciseEntry() {
+  const name = document.getElementById('le-name').value.trim();
+  const cal = parseInt(document.getElementById('le-cal').value) || 0;
+  if (!name) { showToast('Add an activity name'); return; }
+  if (!cal) { showToast('Add a calorie estimate'); return; }
+  const log = getLogForDate(logViewDate);
+  log.exercise.push({name, cal});
+  saveState();
+  closeModal();
+  renderLog();
+  showToast(`${name} logged`);
+}
+
+
 function renderMidday() {
   document.getElementById('page-title').textContent = 'Midday options';
   document.getElementById('page-sub').textContent = 'Pick one or skip — leftovers always win';
   document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'none';
   const flagMap = {ok:['pill-norice','✓ Good pick'],warn:['pill-beef','⚠ Measure it'],no:['pill-rice','✗ Avoid']};
   let html = '';
   MIDDAY.forEach(m => {
@@ -674,8 +1655,9 @@ function buildShoppingList() {
 
 function renderShop() {
   document.getElementById('page-title').textContent = 'Shopping list';
-  document.getElementById('page-sub').textContent = 'Built from this week\\'s planned dinners';
+  document.getElementById('page-sub').textContent = "Built from this week's planned dinners";
   document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'none';
 
   const list = buildShoppingList();
   const keys = Object.keys(list);
@@ -731,6 +1713,7 @@ function renderWeight() {
   document.getElementById('page-title').textContent = 'Progress';
   document.getElementById('page-sub').textContent = 'Goal: 160–165 lbs';
   document.getElementById('header-back').style.display = 'none';
+  document.getElementById('add-recipe-fab').style.display = 'none';
   const start = 178, goal = 165;
   const current = weightLog.length > 1 ? weightLog[weightLog.length-1].weight : start;
   const lost = +(start - current).toFixed(1);
@@ -782,13 +1765,161 @@ function logWeight() {
   showToast(`${val} lbs logged`);
 }
 
-// ─── NAV ────────────────────────────────────────────────────────────────────
+// ─── ADD RECIPE FORM ────────────────────────────────────────────────────────
+let formIngredients = [{name:'', qty:''}];
+let formSteps = [''];
+let formTags = [];
+
+function openAddRecipe() {
+  formIngredients = [{name:'', qty:''}];
+  formSteps = [''];
+  formTags = [];
+
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Add a recipe</div>
+      <div class="page-sub-line">Got something from Facebook or a cookbook? Add it here.</div>
+
+      <div class="form-group">
+        <label class="form-label">Recipe name</label>
+        <input class="form-input" id="f-name" placeholder="e.g. Grandma's pot roast"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">One-line summary</label>
+        <input class="form-input" id="f-summary" placeholder="e.g. Beef chuck, carrots, red wine braise"/>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Calories (per serving)</label>
+          <input class="form-input" id="f-cal" type="number" placeholder="450"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Protein (g)</label>
+          <input class="form-input" id="f-pro" type="number" placeholder="42"/>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Cook time</label>
+          <input class="form-input" id="f-time" placeholder="e.g. 30 min"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tag-toggle-row" id="f-tags">
+            <span class="tag-toggle" data-tag="beef" onclick="toggleFormTag('beef',this)">Beef</span>
+            <span class="tag-toggle" data-tag="chicken" onclick="toggleFormTag('chicken',this)">Chicken</span>
+            <span class="tag-toggle" data-tag="norice" onclick="toggleFormTag('norice',this)">No starch</span>
+            <span class="tag-toggle" data-tag="rice" onclick="toggleFormTag('rice',this)">Rice night</span>
+            <span class="tag-toggle" data-tag="batch" onclick="toggleFormTag('batch',this)">Batch cook</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Ingredients</label>
+        <div id="f-ingredients"></div>
+        <div class="dyn-add-btn" onclick="addIngredientRow()">+ Add ingredient</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Steps</label>
+        <div id="f-steps"></div>
+        <div class="dyn-add-btn" onclick="addStepRow()">+ Add step</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tip (optional)</label>
+        <textarea class="form-textarea" id="f-tip" placeholder="Any swap, shortcut, or note worth remembering"></textarea>
+      </div>
+
+      <div class="form-hint" style="margin-bottom:12px">Got a link or a photo from Facebook instead? Skip this form — just send it to Claude and it'll come back here structured properly.</div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-full" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary btn-full" onclick="saveNewRecipe()">Save recipe</button>
+      </div>
+    </div></div>`;
+
+  document.getElementById('modal-root').innerHTML = html;
+  renderIngredientRows();
+  renderStepRows();
+}
+
+function toggleFormTag(tag, el) {
+  if (formTags.includes(tag)) {
+    formTags = formTags.filter(t => t !== tag);
+    el.classList.remove('selected');
+  } else {
+    formTags.push(tag);
+    el.classList.add('selected');
+  }
+}
+
+function renderIngredientRows() {
+  const c = document.getElementById('f-ingredients');
+  c.innerHTML = formIngredients.map((ing, i) => `
+    <div class="dyn-list-row">
+      <input class="form-input" placeholder="Ingredient" value="${ing.name}" oninput="formIngredients[${i}].name=this.value"/>
+      <input class="form-input" style="max-width:90px" placeholder="Qty" value="${ing.qty}" oninput="formIngredients[${i}].qty=this.value"/>
+      <button class="dyn-remove" onclick="removeIngredientRow(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addIngredientRow() { formIngredients.push({name:'',qty:''}); renderIngredientRows(); }
+function removeIngredientRow(i) { formIngredients.splice(i,1); if(formIngredients.length===0) formIngredients.push({name:'',qty:''}); renderIngredientRows(); }
+
+function renderStepRows() {
+  const c = document.getElementById('f-steps');
+  c.innerHTML = formSteps.map((s, i) => `
+    <div class="dyn-list-row">
+      <input class="form-input" placeholder="Step ${i+1}" value="${s}" oninput="formSteps[${i}]=this.value"/>
+      <button class="dyn-remove" onclick="removeStepRow(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addStepRow() { formSteps.push(''); renderStepRows(); }
+function removeStepRow(i) { formSteps.splice(i,1); if(formSteps.length===0) formSteps.push(''); renderStepRows(); }
+
+function saveNewRecipe() {
+  const name = document.getElementById('f-name').value.trim();
+  const summary = document.getElementById('f-summary').value.trim();
+  const cal = parseInt(document.getElementById('f-cal').value) || 0;
+  const pro = parseInt(document.getElementById('f-pro').value) || 0;
+  const time = document.getElementById('f-time').value.trim() || '—';
+  const tip = document.getElementById('f-tip').value.trim();
+
+  if (!name) { showToast('Recipe needs a name'); return; }
+  if (!cal) { showToast('Add a calorie estimate'); return; }
+
+  const ingredients = formIngredients.filter(i => i.name.trim() !== '');
+  const steps = formSteps.filter(s => s.trim() !== '');
+
+  const id = 'custom_' + Date.now();
+  customRecipes.push({
+    id, name, summary: summary || 'Custom recipe', cal, pro,
+    tags: formTags.length ? formTags : ['custom'],
+    time, serves: 1, tip: tip || '',
+    ingredients: ingredients.length ? ingredients : [{name:'See recipe notes', qty:''}],
+    steps: steps.length ? steps : ['See recipe notes'],
+    custom: true
+  });
+  saveCustomRecipes();
+  closeModal();
+  renderBank();
+  showToast(`${name} added to food bank`);
+}
+
+
 function showPage(page) {
   currentPage = page;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const navMap = {week:'nav-week', bank:'nav-bank', midday:'nav-midday', shop:'nav-shop', weight:'nav-weight'};
+  const navMap = {week:'nav-week', bank:'nav-bank', log:'nav-log', midday:'nav-midday', shop:'nav-shop', weight:'nav-weight'};
   if (navMap[page]) document.getElementById(navMap[page]).classList.add('active');
-  const renders = {week:renderWeek, bank:renderBank, midday:renderMidday, shop:renderShop, weight:renderWeight};
+  const renders = {week:renderWeek, bank:renderBank, log:renderLog, midday:renderMidday, shop:renderShop, weight:renderWeight};
   if (renders[page]) renders[page]();
   window.scrollTo(0,0);
 }
