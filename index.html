@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Meal Plan</title>
+<style>
+  :root {
+    --bg: #f9f8f6; --surface: #ffffff; --border: #e8e5e0; --border-light: #f0ede8;
+    --text: #1a1a1a; --text-2: #666; --text-3: #999;
+    --accent: #c0392b; --accent-light: #fdf0ef;
+    --green: #27500A; --green-light: #EAF3DE;
+    --blue: #0C447C; --blue-light: #E6F1FB;
+    --amber: #633806; --amber-light: #FAEEDA;
+    --purple: #5B2D8E; --purple-light: #F3EAF9;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; min-height: 100vh; }
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+  .header-back { font-size: 14px; color: var(--accent); cursor: pointer; font-weight: 500; }
+  .bottom-nav { background: var(--surface); border-top: 1px solid var(--border); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); display: flex; position: sticky; bottom: 0; z-index: 100; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; cursor: pointer; border: none; background: none; color: var(--text-3); font-size: 10px; font-weight: 500; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .main { flex: 1; padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+  .card-head { padding: 12px 14px; border-bottom: 1px solid var(--border-light); }
+  .card-title { font-size: 15px; font-weight: 600; }
+
+  .pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .pill-cal { background: var(--amber-light); color: var(--amber); }
+  .pill-pro { background: var(--blue-light); color: var(--blue); }
+  .pill-norice { background: var(--green-light); color: var(--green); }
+  .pill-rice { background: var(--purple-light); color: var(--purple); }
+  .pill-beef { background: var(--amber-light); color: var(--amber); }
+  .pill-chicken { background: var(--blue-light); color: var(--blue); }
+  .pill-batch { background: #e8f4fd; color: #1a6a9a; }
+  .pill-leftover { background: #f0ede8; color: var(--text-2); }
+  .pill-time { background: #f0ede8; color: var(--text-2); }
+
+  .meal-row { padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; cursor: pointer; }
+  .meal-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .meal-detail { font-size: 12px; color: var(--text-2); line-height: 1.5; margin: 4px 0 8px; }
+  .meal-mac { font-size: 11px; color: var(--text-3); text-align: right; white-space: nowrap; }
+  .meal-mac strong { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
+  .tip-bar { padding: 10px 14px; background: var(--accent-light); font-size: 12px; color: var(--accent); border-top: 1px solid #f5c6c2; }
+  .tip-bar b { font-weight: 700; }
+
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+  .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text-2); white-space: nowrap; }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .shop-section { margin-bottom: 16px; }
+  .shop-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 8px; padding-left: 2px; }
+  .shop-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; cursor: pointer; }
+  .shop-item.checked { opacity: .45; }
+  .shop-item.checked .shop-name { text-decoration: line-through; }
+  .shop-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .shop-item.checked .shop-check { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .shop-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .shop-qty { font-size: 12px; color: var(--text-3); }
+  .shop-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+  .btn { padding: 9px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--surface); color: var(--text); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-full { width: 100%; }
+  .btn-sm { padding: 6px 10px; font-size: 12px; }
+
+  .weight-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .weight-input { flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; background: var(--surface); }
+  .progress-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .progress-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s; }
+  .weight-log { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .weight-log-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border-light); font-size: 14px; }
+  .weight-log-row:last-child { border-bottom: none; }
+  .weight-log-date { color: var(--text-2); font-size: 12px; }
+  .weight-delta { font-size: 12px; font-weight: 600; }
+  .delta-down { color: var(--green); }
+  .delta-up { color: var(--accent); }
+  .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-lbl { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  .page-sub-line { font-size: 13px; color: var(--text-2); margin-bottom: 14px; }
+
+  /* Week builder */
+  .week-day { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+  .week-day-head { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; background: #fafaf8; border-bottom: 1px solid var(--border-light); }
+  .week-day-name { font-size: 13px; font-weight: 700; }
+  .week-day-body { padding: 12px 14px; }
+  .week-day-empty { color: var(--text-3); font-size: 13px; font-style: italic; }
+  .week-day-meal { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+  .week-day-meal-name { font-size: 14px; font-weight: 600; }
+  .week-day-meal-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+  .week-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+  /* Recipe detail */
+  .recipe-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin: 18px 0 8px; }
+  .recipe-section-title:first-child { margin-top: 0; }
+  .ingredient-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-light); font-size: 14px; }
+  .ingredient-row:last-child { border-bottom: none; }
+  .ingredient-qty { color: var(--text-2); font-size: 13px; }
+  .step-row { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+  .step-row:last-child { border-bottom: none; }
+  .step-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-text { font-size: 14px; line-height: 1.6; padding-top: 1px; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+  .modal-sheet { background: var(--surface); border-radius: 16px 16px 0 0; width: 100%; max-width: 600px; max-height: 80vh; overflow-y: auto; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .modal-option { padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
+  .modal-option:active { background: #f5f4f1; }
+  .modal-option.leftover-opt { color: var(--text-2); font-style: italic; }
+
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div>
+      <div class="header-title" id="page-title">This Week</div>
+      <div class="header-sub" id="page-sub">10pm–noon fast · 1,400–1,540 cal/day</div>
+    </div>
+    <div class="header-back" id="header-back" style="display:none" onclick="closeDetail()">Done</div>
+  </div>
+
+  <div class="main" id="main"></div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('week')" id="nav-week"><span class="nav-icon">📅</span>This Week</button>
+    <button class="nav-btn" onclick="showPage('bank')" id="nav-bank"><span class="nav-icon">📖</span>Food Bank</button>
+    <button class="nav-btn" onclick="showPage('midday')" id="nav-midday"><span class="nav-icon">🥗</span>Midday</button>
+    <button class="nav-btn" onclick="showPage('shop')" id="nav-shop"><span class="nav-icon">🛒</span>Shop</button>
+    <button class="nav-btn" onclick="showPage('weight')" id="nav-weight"><span class="nav-icon">📉</span>Progress</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="modal-root"></div>
+
+<script>
+// ─── FOOD BANK ──────────────────────────────────────────────────────────────
+const FOOD_BANK = [
+  {
+    id:"bulgogi", name:"Korean beef bulgogi bowl",
+    summary:"5oz 93% lean ground beef, bulgogi sauce, jasmine rice, scallions, chili crisp",
+    cal:570, pro:42, tags:["beef","rice"], time:"20 min", serves:1,
+    tip:"Weigh 150g cooked rice = 200 cal. Cut sauce to 2 tbsp max.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"5 oz"},
+      {name:"Bulgogi sauce",qty:"2 tbsp"},
+      {name:"Jasmine rice (cooked)",qty:"½ cup (150g)"},
+      {name:"Scallions",qty:"1, sliced"},
+      {name:"Chili crisp",qty:"1 tsp"},
+      {name:"Garlic",qty:"1 clove, minced"},
+      {name:"Sesame seeds",qty:"pinch"}
+    ],
+    steps:[
+      "Cook rice according to package, set aside.",
+      "Heat a dry nonstick pan over medium-high heat.",
+      "Add ground beef and garlic, break apart and brown for 5-6 minutes.",
+      "Drain any excess fat if needed.",
+      "Add bulgogi sauce, stir to coat, simmer 2-3 minutes until slightly thickened.",
+      "Serve over rice, top with scallions, chili crisp, and sesame seeds."
+    ]
+  },
+  {
+    id:"chili", name:"Crockpot beef chili",
+    summary:"93% lean beef, kidney beans, tomatoes — big batch, freezes well",
+    cal:490, pro:44, tags:["beef","norice","batch"], time:"6-8 hrs", serves:4,
+    tip:"Double batch and freeze in 1.5 cup portions. Great for 2-3 nights as leftovers.",
+    ingredients:[
+      {name:"93% lean ground beef",qty:"2 lbs"},
+      {name:"Kidney beans (canned)",qty:"2 cans, drained"},
+      {name:"Crushed tomatoes",qty:"28 oz can"},
+      {name:"Onion",qty:"1, diced"},
+      {name:"Garlic",qty:"3 cloves, minced"},
+      {name:"Chili powder",qty:"2 tbsp"},
+      {name:"Cumin",qty:"1 tbsp"},
+      {name:"Smoked paprika",qty:"1 tsp"},
+      {name:"Salt and pepper",qty:"to taste"}
+    ],
+    steps:[
+      "Brown ground beef in a pan, drain excess fat, set aside.",
+      "Add beef, beans, crushed tomatoes, onion, garlic, and all spices to the crockpot.",
+      "Stir to combine.",
+      "Cook on low for 6-8 hours, or high for 4 hours.",
+      "Taste and adjust seasoning before serving.",
+      "Portion into 1.5 cup servings — freezes well for up to 3 months."
+    ]
+  },
+  {
+    id:"flanksteak", name:"Balsamic flank steak",
+    summary:"6oz flank steak, balsamic marinade, broccoli + green beans",
+    cal:470, pro:52, tags:["beef","norice"], time:"25 min + marinade", serves:1,
+    tip:"Cook extra — cold leftovers are your best midday protein.",
+    ingredients:[
+      {name:"Flank steak",qty:"6 oz"},
+      {name:"Balsamic vinegar",qty:"3 tbsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Fresh rosemary",qty:"1 sprig, chopped"},
+      {name:"Broccoli",qty:"1 cup, florets"},
+      {name:"Green beans",qty:"1 cup, trimmed"},
+      {name:"Salt and pepper",qty:"to taste"}
+    ],
+    steps:[
+      "Combine balsamic, garlic, and rosemary in a bag or dish. Add steak, marinate 30 min to overnight in the fridge.",
+      "Preheat a grill or cast iron pan to high heat.",
+      "Remove steak from marinade, season with salt and pepper.",
+      "Sear 4-5 minutes per side for medium-rare, depending on thickness.",
+      "Rest the steak 5 minutes before slicing against the grain.",
+      "Meanwhile, roast or steam broccoli and green beans until tender-crisp.",
+      "Slice steak thin and serve alongside vegetables."
+    ]
+  },
+  {
+    id:"braciole", name:"Beef braciole in tomato",
+    summary:"Beef rolled with breadcrumb and parmesan, braised in tomato sauce",
+    cal:530, pro:46, tags:["beef","norice"], time:"1.5-2 hrs", serves:1,
+    tip:"Reheats perfectly — make extra for next day's leftovers.",
+    ingredients:[
+      {name:"Thin beef steak (top round)",qty:"5 oz"},
+      {name:"Breadcrumbs",qty:"2 tbsp"},
+      {name:"Parmesan, grated",qty:"1 tbsp"},
+      {name:"Garlic",qty:"1 clove, minced"},
+      {name:"Fresh parsley",qty:"1 tbsp, chopped"},
+      {name:"Crushed tomatoes",qty:"1 cup"},
+      {name:"Olive oil",qty:"none needed"},
+      {name:"Salt and pepper",qty:"to taste"}
+    ],
+    steps:[
+      "Lay the beef flat, pound thin if needed.",
+      "Mix breadcrumbs, parmesan, garlic, and parsley. Spread over the beef.",
+      "Roll tightly and secure with kitchen twine or toothpicks.",
+      "Sear the roll in a dry hot pan on all sides until browned, about 4 minutes.",
+      "Add crushed tomatoes to the pan, cover, and simmer on low for 1-1.5 hours until tender.",
+      "Remove twine, slice, and serve with the tomato sauce."
+    ]
+  },
+  {
+    id:"stew", name:"French country beef stew",
+    summary:"Beef chuck, pearl onions, carrots, tomato broth — slow cooker",
+    cal:490, pro:46, tags:["beef","norice","batch"], time:"6-8 hrs", serves:4,
+    tip:"Best on Sundays. Portion into containers right away — great for leftovers.",
+    ingredients:[
+      {name:"Beef chuck, cubed",qty:"2 lbs"},
+      {name:"Pearl onions",qty:"1 cup"},
+      {name:"Carrots",qty:"3, chopped"},
+      {name:"Garlic",qty:"3 cloves"},
+      {name:"Crushed tomatoes",qty:"1 can (14oz)"},
+      {name:"Beef broth",qty:"2 cups"},
+      {name:"Fresh thyme",qty:"2 sprigs"},
+      {name:"Bay leaf",qty:"1"},
+      {name:"Salt and pepper",qty:"to taste"}
+    ],
+    steps:[
+      "Season beef chuck with salt and pepper.",
+      "Sear in a hot dry pan until browned on all sides, then transfer to the slow cooker.",
+      "Add pearl onions, carrots, garlic, crushed tomatoes, broth, thyme, and bay leaf.",
+      "Cook on low for 6-8 hours until beef is fork-tender.",
+      "Remove bay leaf and thyme stems before serving.",
+      "Portion into containers — keeps well for 4-5 days refrigerated."
+    ]
+  },
+  {
+    id:"mongolianbeef", name:"Mongolian beef",
+    summary:"Sirloin strips, soy-ginger-hoisin sauce, served over rice or broccoli",
+    cal:480, pro:46, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"Serve over roasted broccoli instead of rice to drop ~200 cal.",
+    ingredients:[
+      {name:"Sirloin, thinly sliced",qty:"5 oz"},
+      {name:"Soy sauce",qty:"1 tbsp"},
+      {name:"Hoisin sauce",qty:"1.5 tbsp"},
+      {name:"Fresh ginger",qty:"1 tsp, minced"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Green onions",qty:"2, sliced"},
+      {name:"Broccoli (or ½ cup rice)",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Slice sirloin thin against the grain.",
+      "Heat a dry nonstick pan over high heat, sear beef 2-3 minutes until browned.",
+      "Add garlic and ginger, stir 30 seconds.",
+      "Add soy sauce and hoisin, toss to coat, cook 1-2 minutes until glossy.",
+      "Steam or roast broccoli separately if using instead of rice.",
+      "Top beef with green onions and serve over broccoli or rice."
+    ]
+  },
+  {
+    id:"carneasada", name:"Carne asada",
+    summary:"Flank steak, citrus-cumin marinade, salsa verde, green beans",
+    cal:410, pro:50, tags:["beef","norice"], time:"20 min + marinade", serves:1,
+    tip:"Add 2 corn tortillas (+160 cal) for tacos if you want.",
+    ingredients:[
+      {name:"Flank steak",qty:"5 oz"},
+      {name:"Lime juice",qty:"2 tbsp"},
+      {name:"Orange juice",qty:"2 tbsp"},
+      {name:"Cumin",qty:"1 tsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Cilantro",qty:"2 tbsp, chopped"},
+      {name:"Salsa verde",qty:"2 tbsp"},
+      {name:"Green beans",qty:"1 cup"}
+    ],
+    steps:[
+      "Combine lime juice, orange juice, cumin, garlic, and cilantro. Marinate steak 30 min to overnight.",
+      "Preheat grill or cast iron pan to high heat.",
+      "Remove steak from marinade, pat dry, season with salt.",
+      "Sear 4-5 minutes per side for medium-rare.",
+      "Rest 5 minutes, slice thin against the grain.",
+      "Roast or steam green beans alongside.",
+      "Top steak with salsa verde and extra cilantro."
+    ]
+  },
+  {
+    id:"beijingbeef", name:"Beijing beef (lighter)",
+    summary:"Sirloin strips, light sweet chili sauce, peppers and onions, over broccoli",
+    cal:430, pro:46, tags:["beef","norice"], time:"20 min", serves:1,
+    tip:"The sauce does the work even in small amounts — don't overdo it.",
+    ingredients:[
+      {name:"Sirloin, thinly sliced",qty:"5 oz"},
+      {name:"Sweet chili sauce",qty:"1 tbsp"},
+      {name:"Red bell pepper",qty:"½, sliced"},
+      {name:"Onion",qty:"¼, sliced"},
+      {name:"Garlic",qty:"1 clove, minced"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Heat a dry nonstick pan over high heat, sear sliced sirloin 2-3 minutes.",
+      "Add peppers, onion, and garlic, stir-fry 3-4 minutes until softened.",
+      "Add sweet chili sauce, toss to coat evenly.",
+      "Steam or roast broccoli separately.",
+      "Serve beef and peppers over broccoli."
+    ]
+  },
+  {
+    id:"pulehu", name:"Pulehu steak tip skewers",
+    summary:"Sirloin tips, Hawaiian soy-ginger marinade, grilled on skewers",
+    cal:420, pro:48, tags:["beef","norice"], time:"20 min + marinade", serves:1,
+    tip:"Great weekend grill option. Similar to bulgogi but smokier.",
+    ingredients:[
+      {name:"Sirloin tips, cubed",qty:"5 oz"},
+      {name:"Soy sauce",qty:"2 tbsp"},
+      {name:"Fresh ginger",qty:"1 tsp, minced"},
+      {name:"Brown sugar",qty:"1 tsp"},
+      {name:"Garlic",qty:"2 cloves, minced"},
+      {name:"Broccoli",qty:"1.5 cups"},
+      {name:"Wooden skewers",qty:"4"}
+    ],
+    steps:[
+      "Combine soy sauce, ginger, brown sugar, and garlic. Marinate beef cubes 30 min to overnight.",
+      "Thread beef onto skewers.",
+      "Grill or sear in a hot pan, turning every 2 minutes, total 6-8 minutes.",
+      "Roast or steam broccoli alongside.",
+      "Serve skewers over or alongside the broccoli."
+    ]
+  },
+  {
+    id:"buldak", name:"Buldak fire chicken",
+    summary:"Chicken thighs, buldak sauce, jasmine rice, cucumber to cool the heat",
+    cal:560, pro:48, tags:["chicken","rice"], time:"25 min", serves:1,
+    tip:"Cucumber slices alongside cool the heat. Swap to breast to save ~60 cal.",
+    ingredients:[
+      {name:"Chicken thighs, boneless",qty:"6 oz"},
+      {name:"Buldak sauce",qty:"2 tbsp"},
+      {name:"Jasmine rice (cooked)",qty:"½ cup (150g)"},
+      {name:"Cucumber",qty:"½, sliced"},
+      {name:"Sesame seeds",qty:"pinch"}
+    ],
+    steps:[
+      "Cook rice according to package.",
+      "Heat a dry nonstick pan over medium-high heat.",
+      "Cook chicken thighs 5-6 minutes per side until cooked through.",
+      "Add buldak sauce, toss to coat, simmer 2 minutes.",
+      "Serve over rice with cucumber slices on the side.",
+      "Top with sesame seeds."
+    ]
+  },
+  {
+    id:"plainchicken", name:"Plain chicken + roasted veg",
+    summary:"Chicken breast, garlic and herbs, broccoli + green beans",
+    cal:380, pro:56, tags:["chicken","norice"], time:"30 min", serves:1,
+    tip:"Season hard — smoked paprika, garlic powder, Italian seasoning. Plain doesn't mean bland.",
+    ingredients:[
+      {name:"Chicken breast",qty:"6 oz"},
+      {name:"Garlic powder",qty:"1 tsp"},
+      {name:"Smoked paprika",qty:"1 tsp"},
+      {name:"Italian seasoning",qty:"1 tsp"},
+      {name:"Lemon",qty:"½, juiced"},
+      {name:"Broccoli",qty:"1 cup"},
+      {name:"Green beans",qty:"1 cup"}
+    ],
+    steps:[
+      "Preheat oven to 400°F.",
+      "Season chicken breast generously with garlic powder, smoked paprika, Italian seasoning, salt and pepper.",
+      "Place on a baking sheet with broccoli and green beans.",
+      "Squeeze lemon juice over everything.",
+      "Bake 22-25 minutes until chicken reaches 165°F internally.",
+      "Let rest 5 minutes before slicing."
+    ]
+  },
+  {
+    id:"caesarchicken", name:"Baked Caesar chicken",
+    summary:"Chicken breast with light Caesar + parmesan crust, over broccoli",
+    cal:400, pro:50, tags:["chicken","norice"], time:"30 min", serves:1,
+    tip:"Skip the pasta from the original recipe — the crust is the star.",
+    ingredients:[
+      {name:"Chicken breast",qty:"5 oz"},
+      {name:"Light Caesar dressing",qty:"1 tbsp"},
+      {name:"Parmesan, grated",qty:"2 tbsp"},
+      {name:"Breadcrumbs",qty:"1 tbsp"},
+      {name:"Broccoli",qty:"1.5 cups"}
+    ],
+    steps:[
+      "Preheat oven to 400°F.",
+      "Brush chicken breast with Caesar dressing on both sides.",
+      "Mix parmesan and breadcrumbs, press onto the top of the chicken.",
+      "Place on a baking sheet alongside broccoli.",
+      "Bake 20-22 minutes until chicken reaches 165°F and crust is golden.",
+      "Let rest 5 minutes before serving."
+    ]
+  }
+];
+
+const MIDDAY = [
+  {name:"Leftovers from last night",detail:"Already counted, already made. Best pick every time.",cal:400,pro:40,flag:"ok"},
+  {name:"Nurri shake straight",detail:"Drink a full can as a meal — 150 cal, 30g protein, done in 30 seconds.",cal:150,pro:30,flag:"ok"},
+  {name:"Hard boiled eggs × 2",detail:"With hot sauce, flaky salt, everything bagel seasoning.",cal:140,pro:12,flag:"ok"},
+  {name:"Cheese + deli meat",detail:"1.5oz salami, capicola or mortadella + 1oz provolone or manchego.",cal:240,pro:16,flag:"ok"},
+  {name:"Small salad with protein",detail:"2 cups greens, 2oz deli meat or leftover steak, balsamic freely.",cal:220,pro:18,flag:"ok"},
+  {name:"Whisps or cheese crisps",detail:"1 bag parmesan Whisps — 150 cal, 11g protein, satisfying.",cal:150,pro:11,flag:"ok"},
+  {name:"Handful of almonds",detail:"1oz = ~23 almonds. Pre-portion into bags — don't eat from the container.",cal:170,pro:6,flag:"warn"},
+  {name:"Granola bar",detail:"Most are 200–300 cal of sugar with almost no protein. Swap for Nurri instead.",cal:260,pro:4,flag:"no"},
+];
+
+const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let currentPage = 'week';
+let currentFilter = 'all';
+let checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '{}');
+let weightLog = JSON.parse(localStorage.getItem('weightLog') || '[{"date":"Start","weight":178}]');
+let weekPlan = JSON.parse(localStorage.getItem('weekPlan') || '{}'); // { Mon: {type:'meal', id:'bulgogi'} or {type:'leftover', from:'Mon', name:'...'} }
+let pickingDay = null;
+
+function saveState() {
+  localStorage.setItem('weekPlan', JSON.stringify(weekPlan));
+  localStorage.setItem('checkedItems', JSON.stringify(checkedItems));
+  localStorage.setItem('weightLog', JSON.stringify(weightLog));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function getMeal(id) { return FOOD_BANK.find(m => m.id === id); }
+
+function tagPill(tag) {
+  const map = {beef:['pill-beef','Beef'],chicken:['pill-chicken','Chicken'],norice:['pill-norice','No starch'],rice:['pill-rice','Rice night'],batch:['pill-batch','Batch cook']};
+  const [cls, label] = map[tag] || ['',''];
+  return `<span class="pill ${cls}">${label}</span>`;
+}
+
+// ─── WEEK PAGE ──────────────────────────────────────────────────────────────
+function renderWeek() {
+  document.getElementById('page-title').textContent = 'This Week';
+  document.getElementById('page-sub').textContent = 'Tap a day to pick dinner or mark leftovers';
+  document.getElementById('header-back').style.display = 'none';
+
+  let totalCal = 0, totalPro = 0, plannedDays = 0;
+  let html = '';
+
+  DAYS.forEach(day => {
+    const entry = weekPlan[day];
+    html += `<div class="week-day"><div class="week-day-head"><div class="week-day-name">${day}</div>`;
+
+    if (entry) {
+      let meal, label;
+      if (entry.type === 'meal') {
+        meal = getMeal(entry.id);
+        label = '';
+      } else if (entry.type === 'leftover') {
+        meal = getMeal(entry.id);
+        label = `Leftover from ${entry.from}`;
+      }
+      if (meal) {
+        totalCal += meal.cal; totalPro += meal.pro; plannedDays++;
+        html += `<button class="btn btn-sm" onclick="openPicker('${day}')">Change</button></div>
+          <div class="week-day-body">
+            <div class="week-day-meal">
+              <div onclick="openRecipe('${meal.id}')" style="cursor:pointer">
+                <div class="week-day-meal-name">${meal.name}</div>
+                <div class="week-day-meal-sub">${label ? label + ' · ' : ''}${meal.cal} cal · ${meal.pro}g protein</div>
+              </div>
+            </div>
+          </div>`;
+      }
+    } else {
+      html += `<button class="btn btn-sm btn-primary" onclick="openPicker('${day}')">Pick dinner</button></div>
+        <div class="week-day-body"><div class="week-day-empty">Not planned yet</div></div>`;
+    }
+    html += `</div>`;
+  });
+
+  let summaryHtml = '';
+  if (plannedDays > 0) {
+    summaryHtml = `<div class="card" style="padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:13px;color:var(--text-2)">${plannedDays} of 7 days planned · avg <strong style="color:var(--text)">${Math.round(totalCal/plannedDays)} cal</strong> / <strong style="color:var(--text)">${Math.round(totalPro/plannedDays)}g protein</strong> per dinner</div>
+    </div>`;
+  }
+
+  document.getElementById('main').innerHTML = summaryHtml + html;
+}
+
+function openPicker(day) {
+  pickingDay = day;
+  const plannedMeals = DAYS.map(d => ({day:d, entry:weekPlan[d]})).filter(x => x.entry && x.day !== day);
+
+  let html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Pick dinner for ${day}</div>
+      <div class="page-sub-line">Choose from the food bank, or mark as leftovers</div>`;
+
+  if (plannedMeals.length > 0) {
+    html += `<div class="recipe-section-title">Leftovers from this week</div>`;
+    plannedMeals.forEach(x => {
+      const meal = getMeal(x.entry.id);
+      if (meal) {
+        html += `<div class="modal-option leftover-opt" onclick="setLeftover('${day}','${x.day}','${meal.id}')">${meal.name} <span style="color:var(--text-3)">(from ${x.day})</span></div>`;
+      }
+    });
+  }
+
+  html += `<div class="recipe-section-title">Food bank</div>`;
+  FOOD_BANK.forEach(m => {
+    html += `<div class="modal-option" onclick="setMeal('${day}','${m.id}')">${m.name} <span style="color:var(--text-3)">· ${m.cal} cal</span></div>`;
+  });
+
+  html += `<button class="btn btn-full" style="margin-top:10px" onclick="closeModal()">Cancel</button>
+    </div></div>`;
+
+  document.getElementById('modal-root').innerHTML = html;
+}
+
+function setMeal(day, id) {
+  weekPlan[day] = {type:'meal', id};
+  saveState();
+  closeModal();
+  renderWeek();
+  showToast(`${day} set`);
+}
+
+function setLeftover(day, fromDay, id) {
+  weekPlan[day] = {type:'leftover', id, from: fromDay};
+  saveState();
+  closeModal();
+  renderWeek();
+  showToast(`${day} set as leftovers`);
+}
+
+function closeModal() {
+  document.getElementById('modal-root').innerHTML = '';
+}
+
+// ─── FOOD BANK PAGE ─────────────────────────────────────────────────────────
+function renderBank() {
+  document.getElementById('page-title').textContent = 'Food bank';
+  document.getElementById('page-sub').textContent = `${FOOD_BANK.length} dinners · tap any for full recipe`;
+  document.getElementById('header-back').style.display = 'none';
+
+  const filters = [{key:'all',label:'All'},{key:'beef',label:'Beef'},{key:'chicken',label:'Chicken'},{key:'norice',label:'No starch'},{key:'rice',label:'Rice nights'},{key:'batch',label:'Batch cook'}];
+  let html = `<div class="filter-row">`;
+  filters.forEach(f => {
+    html += `<button class="filter-btn${currentFilter===f.key?' active':''}" onclick="currentFilter='${f.key}';renderBank()">${f.label}</button>`;
+  });
+  html += `</div>`;
+
+  const filtered = currentFilter === 'all' ? FOOD_BANK : FOOD_BANK.filter(d => d.tags.includes(currentFilter));
+  filtered.forEach(d => {
+    html += `<div class="card">
+      <div class="meal-row" onclick="openRecipe('${d.id}')">
+        <div>
+          <div class="meal-name">${d.name}</div>
+          <div class="meal-detail">${d.summary}</div>
+          <div class="pills">${d.tags.map(tagPill).join('')}<span class="pill pill-time">⏱ ${d.time}</span></div>
+        </div>
+        <div class="meal-mac"><strong>${d.cal}</strong>cal<br>${d.pro}g pro</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+function openRecipe(id) {
+  const m = getMeal(id);
+  if (!m) return;
+  document.getElementById('page-title').textContent = m.name;
+  document.getElementById('page-sub').textContent = `${m.cal} cal · ${m.pro}g protein · ${m.time}`;
+  document.getElementById('header-back').style.display = 'block';
+
+  let html = `<div class="tip-bar" style="border-radius:var(--radius);margin-bottom:14px"><b>Tip:</b> ${m.tip}</div>`;
+
+  html += `<div class="recipe-section-title">Ingredients</div><div class="card" style="padding:4px 14px">`;
+  m.ingredients.forEach(i => {
+    html += `<div class="ingredient-row"><span>${i.name}</span><span class="ingredient-qty">${i.qty}</span></div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="recipe-section-title">Steps</div><div class="card" style="padding:4px 14px">`;
+  m.steps.forEach((s, i) => {
+    html += `<div class="step-row"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`;
+  });
+  html += `</div>`;
+
+  document.getElementById('main').innerHTML = html;
+  currentPage = 'recipe';
+}
+
+function closeDetail() {
+  showPage(currentPage === 'recipe' ? (pickingDay !== null ? 'week' : 'bank') : 'bank');
+}
+
+// ─── MIDDAY PAGE ────────────────────────────────────────────────────────────
+function renderMidday() {
+  document.getElementById('page-title').textContent = 'Midday options';
+  document.getElementById('page-sub').textContent = 'Pick one or skip — leftovers always win';
+  document.getElementById('header-back').style.display = 'none';
+  const flagMap = {ok:['pill-norice','✓ Good pick'],warn:['pill-beef','⚠ Measure it'],no:['pill-rice','✗ Avoid']};
+  let html = '';
+  MIDDAY.forEach(m => {
+    const [cls, label] = flagMap[m.flag];
+    html += `<div class="card"><div class="meal-row" style="cursor:default">
+      <div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-detail">${m.detail}</div>
+        <span class="pill ${cls}">${label}</span>
+      </div>
+      <div class="meal-mac"><strong>${m.cal}</strong>cal<br>${m.pro}g pro</div>
+    </div></div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+// ─── SHOPPING PAGE — generated from weekPlan ──────────────────────────────
+function buildShoppingList() {
+  const allIngredients = {};
+  DAYS.forEach(day => {
+    const entry = weekPlan[day];
+    if (entry && entry.type === 'meal') {
+      const meal = getMeal(entry.id);
+      if (meal) {
+        meal.ingredients.forEach(ing => {
+          if (!allIngredients[ing.name]) allIngredients[ing.name] = [];
+          allIngredients[ing.name].push(ing.qty);
+        });
+      }
+    }
+  });
+  return allIngredients;
+}
+
+function renderShop() {
+  document.getElementById('page-title').textContent = 'Shopping list';
+  document.getElementById('page-sub').textContent = 'Built from this week\\'s planned dinners';
+  document.getElementById('header-back').style.display = 'none';
+
+  const list = buildShoppingList();
+  const keys = Object.keys(list);
+
+  if (keys.length === 0) {
+    document.getElementById('main').innerHTML = `<div class="card" style="padding:30px 20px;text-align:center;color:var(--text-3)">
+      <div style="font-size:32px;margin-bottom:10px">🛒</div>
+      No dinners planned yet.<br>Go to <strong>This Week</strong> and pick some meals first.
+    </div>`;
+    return;
+  }
+
+  let html = `<div class="shop-actions">
+    <button class="btn btn-primary" onclick="resetShop()">Reset checks</button>
+    <button class="btn" onclick="copyShop()">Copy list</button>
+  </div><div class="shop-section">`;
+
+  keys.sort().forEach((name, i) => {
+    const checked = !!checkedItems[name];
+    const qtys = list[name].join(' + ');
+    html += `<div class="shop-item${checked?' checked':''}" onclick="toggleShop('${name.replace(/'/g,"\\\\'")}',this)">
+      <div class="shop-check">${checked?'✓':''}</div>
+      <div class="shop-name">${name}</div>
+      <div class="shop-qty">${qtys}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  document.getElementById('main').innerHTML = html;
+}
+
+function toggleShop(key, el) {
+  checkedItems[key] = !checkedItems[key];
+  saveState();
+  el.classList.toggle('checked');
+  el.querySelector('.shop-check').textContent = checkedItems[key] ? '✓' : '';
+}
+
+function resetShop() {
+  checkedItems = {};
+  saveState();
+  renderShop();
+  showToast('Checks reset');
+}
+
+function copyShop() {
+  const list = buildShoppingList();
+  const lines = Object.keys(list).sort().map(name => `• ${name} — ${list[name].join(' + ')}`);
+  navigator.clipboard.writeText(lines.join('\n')).then(() => showToast('List copied!'));
+}
+
+// ─── WEIGHT PAGE ────────────────────────────────────────────────────────────
+function renderWeight() {
+  document.getElementById('page-title').textContent = 'Progress';
+  document.getElementById('page-sub').textContent = 'Goal: 160–165 lbs';
+  document.getElementById('header-back').style.display = 'none';
+  const start = 178, goal = 165;
+  const current = weightLog.length > 1 ? weightLog[weightLog.length-1].weight : start;
+  const lost = +(start - current).toFixed(1);
+  const toGo = +(current - goal).toFixed(1);
+  const pct = Math.min(100, Math.max(0, Math.round((lost / (start - goal)) * 100)));
+  const weeksLeft = toGo > 0 ? Math.ceil(toGo / 1) : 0;
+
+  let html = `<div class="stat-row">
+    <div class="stat-card"><div class="stat-val">${current}</div><div class="stat-lbl">Current lbs</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)">${lost > 0 ? lost : 0}</div><div class="stat-lbl">lbs lost</div></div>
+    <div class="stat-card"><div class="stat-val">${toGo > 0 ? toGo : '🎯'}</div><div class="stat-lbl">${toGo > 0 ? 'lbs to go' : 'Goal hit!'}</div></div>
+  </div>
+  <div class="progress-block">
+    <div class="progress-label"><span>178 lbs</span><strong>Goal: 165 lbs</strong></div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:12px;color:var(--text-3);margin-top:8px">${pct}% there · ~${weeksLeft} weeks at 1 lb/week</div>
+  </div>
+  <div class="weight-input-row">
+    <input class="weight-input" type="number" id="weight-in" placeholder="Log today's weight (lbs)" step="0.1" min="100" max="400"/>
+    <button class="btn btn-primary" onclick="logWeight()">Log</button>
+  </div>`;
+
+  if (weightLog.length > 0) {
+    html += `<div class="weight-log">`;
+    [...weightLog].reverse().forEach((entry, i, arr) => {
+      const prev = arr[i+1];
+      let delta = '';
+      if (prev && entry.weight !== prev.weight) {
+        const diff = +(entry.weight - prev.weight).toFixed(1);
+        const cls = diff < 0 ? 'delta-down' : 'delta-up';
+        delta = `<span class="weight-delta ${cls}">${diff > 0 ? '+' : ''}${diff} lbs</span>`;
+      }
+      html += `<div class="weight-log-row"><div><div style="font-weight:600">${entry.weight} lbs</div><div class="weight-log-date">${entry.date}</div></div>${delta}</div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('main').innerHTML = html;
+}
+
+function logWeight() {
+  const input = document.getElementById('weight-in');
+  const val = parseFloat(input.value);
+  if (!val || val < 100 || val > 400) { showToast('Enter a valid weight'); return; }
+  const today = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  weightLog.push({date: today, weight: val});
+  saveState();
+  input.value = '';
+  renderWeight();
+  showToast(`${val} lbs logged`);
+}
+
+// ─── NAV ────────────────────────────────────────────────────────────────────
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navMap = {week:'nav-week', bank:'nav-bank', midday:'nav-midday', shop:'nav-shop', weight:'nav-weight'};
+  if (navMap[page]) document.getElementById(navMap[page]).classList.add('active');
+  const renders = {week:renderWeek, bank:renderBank, midday:renderMidday, shop:renderShop, weight:renderWeight};
+  if (renders[page]) renders[page]();
+  window.scrollTo(0,0);
+}
+
+showPage('week');
+</script>
+</body>
+</html>
